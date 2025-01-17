@@ -1,0 +1,74 @@
+'use client'
+import moment from 'moment';
+// In a page or component that uses CustomCalendar
+import dynamic from 'next/dynamic';
+import { useEffect, useRef, useState } from 'react';
+import { useLoading } from '../context/LoadingContext';
+import { ApiResponse } from '../shared/response/apiResponse';
+import { getCalendarList } from '../services/post-service';
+import { CalendarListType, CustomDateEventType, Post } from '../shared/dataPass';
+import { ErrorCode, LocalStorageType } from '../constants/pages';
+import { logout } from '../services/auth-service';
+import { useRouter } from 'next/navigation';
+
+const CustomCalendar = dynamic(() => import('../common/custom-calendar'), {
+  ssr: false,
+});
+
+const CalendarPage: React.FC = () => {
+  const [event , setEvent] = useState<Post[]>([])
+  const { setIsLoading } = useLoading();
+  const router = useRouter();
+  const hasFetched = useRef(false);
+  const startOfWeek = moment(new Date()).startOf('week').toDate(); // Get start of the week
+  const endOfWeek = moment(new Date()).endOf('week').toDate(); // Get end of the week
+  useEffect(() => {
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      getCalendarData({startWeekDate: moment(startOfWeek).format('YYYY-MM-DD') ,endWeekDate: moment(endOfWeek).format('YYYY-MM-DD') ,userId:parseInt(localStorage.getItem(LocalStorageType.USER_ID) || '')})
+    }
+  },[]);
+
+  const getCalendarData = async(obj : CalendarListType) => {
+    setIsLoading(true);
+    const response : ApiResponse<Post[]> = await getCalendarList(obj);
+    if(response?.IsSuccess){
+      setIsLoading(false);
+      response?.Data.forEach((element:Post) => {
+        element.allDay = true;
+        const inputDate = moment(element.start); // Convert the input date string to a moment object
+        const currentDate = moment(); // Get the current date and time as a moment object
+        element.isPast = inputDate.isBefore(currentDate);
+        element.start = new Date(element.start);
+        element.end = new Date(element.end);
+      });
+      setEvent(response?.Data)
+    }else{
+      if(response.StatusCode == ErrorCode.UNAUTHORISED){
+        logout(router);
+      }
+      setIsLoading(false);
+    }
+  }
+
+  const getWeekDates = (obj:CustomDateEventType) => {
+    const startOfWeek = obj.startDate; // Get start of the week
+    const endOfWeek = obj.endDate; // Get end of the week
+   
+    getCalendarData({startWeekDate: moment(startOfWeek).format('YYYY-MM-DD') ,endWeekDate: moment(endOfWeek).format('YYYY-MM-DD') ,userId:parseInt(localStorage.getItem(LocalStorageType.USER_ID) || '')})
+  }
+
+
+  return(
+    <div>
+      <div className="page-content">
+      <CustomCalendar data={event} getDate={getWeekDates}/>
+     </div>
+    </div> 
+    );
+
+}
+
+  
+
+export default CalendarPage;
