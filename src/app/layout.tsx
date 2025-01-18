@@ -34,26 +34,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
       <html lang="en">
         <body className="font-Roboto antialiased  bg-white">
-        <DataProvider>
-          <NextUIProvider>
-            <LoadingProvider>
+          <DataProvider>
+            <NextUIProvider>
+              <LoadingProvider>
                 <GlobalLoader />
-            </LoadingProvider>  
-          </NextUIProvider>
-        </DataProvider>
+              </LoadingProvider>
+            </NextUIProvider>
+          </DataProvider>
         </body>
       </html>
     );
   }
   const staticTitle = routeTitleMapping[pathname];
-  const pageTitle = staticTitle  || "PostReachAI";
+  const pageTitle = staticTitle || "PostReachAI";
   return (
     <html lang="en">
       <head>
         <title>{pageTitle}</title>
       </head>
       <body className="font-Roboto antialiased bg-white">
-      <Script
+        {/* <Script
           id="clarity-script"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
@@ -65,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               })(window, document, "clarity", "script", "pftbt6yt4s");
             `,
           }}
-        />
+        /> */}
         <DataProvider>
           <NextUIProvider>
             <LoadingProvider>
