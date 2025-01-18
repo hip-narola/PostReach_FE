@@ -1,7 +1,7 @@
 // middleware.ts
 import {NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { LocalStorageType } from './app/constants/pages';
+// import { LocalStorageType } from './app/constants/pages';
 import navigations from './app/constants/navigations';
 
 export function middleware(request: NextRequest) {
