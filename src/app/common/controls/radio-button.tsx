@@ -1,7 +1,8 @@
 'use client';
+import { DataContext } from '@/app/context/shareData';
 import { OptionsList, QuestionTypes } from '@/app/shared/dataPass';
 import { Radio, RadioGroup } from '@nextui-org/react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 interface GlobalRadioGroupProps{
   optionList: QuestionTypes;
@@ -11,11 +12,16 @@ interface GlobalRadioGroupProps{
 }
 
 const RadioGroupControl : React.FC<GlobalRadioGroupProps> =  ({ optionList ,selectedAnswerOptions , checkValidation }) => {
+  const context = useContext(DataContext);
+
+    if (!context) {
+        throw new Error('DataContext must be used within a DataProvider');
+    }
   const [selected, setSelected] = useState(optionList?.Answers?.question_option_id);
 
   useEffect(() => {
     // Trigger validation initially
-    if (selected == undefined && optionList.IsRequired) {
+    if (selected == undefined && optionList.IsRequired  && !context.getPartner) {
       checkValidation(true);
     }else{
       checkValidation(false);

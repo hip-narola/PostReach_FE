@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   if (isLoading) {
     return (
       <html lang="en">
-        <body className="font-Roboto antialiased">
+        <body className="font-Roboto antialiased  bg-white">
         <DataProvider>
           <NextUIProvider>
             <LoadingProvider>
@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <title>{pageTitle}</title>
       </head>
-      <body className="font-Roboto antialiased">
+      <body className="font-Roboto antialiased bg-white">
       <Script
           id="clarity-script"
           strategy="afterInteractive"

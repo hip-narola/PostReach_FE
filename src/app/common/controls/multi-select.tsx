@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Checkbox, CheckboxGroup } from '@nextui-org/react';
 import { QuestionTypes, SelectedAnswersType } from '@/app/shared/dataPass';
+import { DataContext } from '@/app/context/shareData';
 
 interface GlobalMultiSelectProps {
   optionList: QuestionTypes;
@@ -9,11 +10,15 @@ interface GlobalMultiSelectProps {
 }
 
 const MultiSelect: React.FC<GlobalMultiSelectProps> = ({ optionList, selectedAnswerOptions ,checkValidation}) => {
+  const context = useContext(DataContext);
+
+    if (!context) {
+        throw new Error('DataContext must be used within a DataProvider');
+    }
   const [selected, setSelected] = useState(optionList?.Answers?.question_option_id.length ? (optionList.Answers?.question_option_id.length > 1 ? optionList.Answers?.question_option_id : optionList.Answers?.question_option_id[0].split(', ')) : []);
 
   useEffect(() => {
-    // Trigger validation initially
-    if (selected.length == 0 && optionList.IsRequired) {
+    if (selected.length == 0 && optionList.IsRequired && !context.getPartner) {
       checkValidation(true);
     }else{
       checkValidation(false);
@@ -21,15 +26,12 @@ const MultiSelect: React.FC<GlobalMultiSelectProps> = ({ optionList, selectedAns
   }, [selected]);
 
   const handleSelection = (val: string[]) => {
-    setSelected(val); // Update the local state
+    setSelected(val);
     const answerObj : SelectedAnswersType = {
       questionId: optionList.id,
       question_option_id: val,
     };
     selectedAnswerOptions(answerObj); 
-    
-   
-    // Use `val` directly instead of relying on `selected`
   };
 
   return (

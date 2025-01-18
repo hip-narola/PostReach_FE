@@ -1,4 +1,4 @@
-import React, {  useEffect, useState } from 'react';
+import React, {  useContext, useEffect, useState } from 'react';
 import {  OnboardQuestionType, QuestionTypes, UserDataType, AnswerType, SelectedAnswersType } from '../shared/dataPass';
 import { useRouter } from "next/navigation";
 import { ControlType, LocalStorageType, QuestionnaireType } from '../constants/pages';
@@ -14,11 +14,18 @@ import DropdownControl from './controls/dropdown';
 import { ApiResponse } from '../shared/response/apiResponse';
 import { getUserDetails, submitOnBoarding } from '../services/user-service';
 import AutoComplete from './controls/searchable-dropdown';
+import { DataContext } from '../context/shareData';
 interface CustomStepperWithLineProps {
   data:  OnboardQuestionType[]; // array for each step's content
 }
 
 const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) => {
+  const context = useContext(DataContext);
+
+    if (!context) {
+        throw new Error('DataContext must be used within a DataProvider');
+    }
+
   const [steps, setSteps] = useState<string[]>([]); 
   const [currentStep, setCurrentStep] = useState(localStorage.getItem(LocalStorageType.COMPLETE_STEP) ? (parseInt(localStorage.getItem(LocalStorageType.COMPLETE_STEP) || '') > 0 ? parseInt(localStorage.getItem(LocalStorageType.COMPLETE_STEP) || '') : 0) : 0);
   const [subStep, setSubStep] = useState(false);
@@ -38,6 +45,7 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
   }, [currentStep, data]); // Only run when `currentStep` or `data` changes
 
     const goToNextStep = async () => {
+      context.setPartner(false);
       submitStep(); // Store current step data
       setPrevious(false);
       setSubStep(false)
@@ -73,6 +81,7 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
     }
     
     const goToPreviousStep = () => {
+      context.setPartner(false);
       setPrevious(true);
       if (currentStep > 0) {
           setCurrentStep((prevStep) => prevStep - 1); 
@@ -90,20 +99,26 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
   const setStepData = () => {
     const sanitizedData = data[currentStep]?.Questions.map((question, index) => {
       const details = data[currentStep]?.Questions.find((e) => e.QuestionOrder === index + 1);
+      if(details){
+        details.isPartner = false;
+      }
       return details;
     }).filter((question) => question !== null);
-  
+    const referenceQuestion = sanitizedData.find((e) => e?.ReferenceId != null)
+        if(referenceQuestion){
+          sanitizedData.forEach((element) => {
+            if (element) element.isPartner = true;
+          })
+        }
     setCurrentData(sanitizedData as QuestionTypes[]);
   };
 
     const handleSingleClick = (ans: QuestionTypes | null) => {
           if (ans) {
-            // If ans can be transformed to QuestionTypes, apply the transformation here.
             const questionData = ans as unknown as QuestionTypes;
             setSubData(questionData);
             setSubStep(true)
         } else {
-            // Handle the null case if necessary
             setSubData(null);
         }
     }
@@ -120,8 +135,8 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
       
         setAnswer(updatedAnswer);
       
-        // Sync the answer to data
         updatedAnswer.forEach((element) => {
+          
           const filterData = data[currentStep].Questions.find((e) => e.id === element.questionId);
       
           if (filterData && filterData.Answers) {
@@ -134,14 +149,14 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
             }
           }
         });
-      
-    
-      // validateStepCompletion(); // Recheck all validations for the step
     };
 
+
+
      const handleValidation = (validate:boolean) => {
+      console.log('context.getPartner =>',context.getPartner);
       console.log('validate =>',validate);
-      
+    
       if(!isPrevious){
         setIsButtonDisabled(validate);
       }else{
@@ -205,7 +220,8 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
                                   <TextBox  
                                     optionList={val} 
                                     selectedAnswerOptions={selectedAnswerOptions}
-                                    checkValidation={handleValidation} />
+                                    checkValidation={handleValidation}
+                                    />
                                 }
                                 {/* text-box */}
                 
@@ -222,7 +238,8 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
                                 { val.QuestionType === ControlType.CHECKBOX && 
                                   <CheckBox optionList={val}  
                                   selectedAnswerOptions={selectedAnswerOptions}
-                                  checkValidation={handleValidation}  />
+                                  checkValidation={handleValidation}
+                                  />
                                 } 
                                 {/* check-box */}
 
@@ -282,18 +299,19 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
 
                             {/* text-box */}
                             { subData.QuestionType === ControlType.TEXTBOX && 
-                                <TextBox  optionList={subData}
-                               selectedAnswerOptions={selectedAnswerOptions} 
-                               checkValidation={handleValidation}/>
+                              <TextBox  optionList={subData}
+                                selectedAnswerOptions={selectedAnswerOptions} 
+                                checkValidation={handleValidation}
+                              />
                               }
                             {/* text-box */}
 
                             {/* text-area */}
                             { subData.QuestionType === ControlType.TEXTAREA && 
                               <TextArea  
-                              optionList={subData}
-                              selectedAnswerOptions={selectedAnswerOptions}
-                              checkValidation={handleValidation}
+                                optionList={subData}
+                                selectedAnswerOptions={selectedAnswerOptions}
+                                checkValidation={handleValidation}
                               />
                             }     
                             {/* text-area */}
@@ -302,7 +320,7 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
                             { subData.QuestionType === ControlType.CHECKBOX && 
                                 <CheckBox optionList={subData} 
                                 selectedAnswerOptions={selectedAnswerOptions}
-                                checkValidation={handleValidation}  />
+                                checkValidation={handleValidation}/>
                               
                             } 
                             {/* check-box */}

@@ -84,6 +84,15 @@ const Registration: React.FC = () => {
     } else {
       setPasswordError("");
     }
+    if(terms){
+      if(username != '' && password != '' && email != ''){
+        isValid = true;
+      }else{
+        isValid = false;
+      }
+    }else{
+      isValid = false;
+    }
 
     setIsButtonDisabled(!isValid);
   };

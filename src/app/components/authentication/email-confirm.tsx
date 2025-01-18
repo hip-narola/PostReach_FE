@@ -15,6 +15,7 @@ import navigations from "@/app/constants/navigations";
 import { getUserDetails } from "@/app/services/user-service";
 import Countdown from 'react-countdown';
 import { ErrorCode, LocalStorageType, PageConstant, Titles } from "@/app/constants/pages";
+import { useLoading } from "@/app/context/LoadingContext";
 
 const EmailConfirm: React.FC = () => {
 
@@ -30,7 +31,7 @@ const EmailConfirm: React.FC = () => {
   const [touched, setTouched] = useState(false);
   const [isExpired, setExpired] = useState(true);
   const [expirationTime, setExpirationTime] = useState<number>(Date.now() + 60000); // Store expiration time
-
+const { setIsLoading } = useLoading();
 
   const router = useRouter();
   const details : DataContextResponseType = context.sharedData;
@@ -60,13 +61,16 @@ const EmailConfirm: React.FC = () => {
       router.push(navigations.resetPassword);
     }else{
       if (!errors.code && code) {
+        setIsLoading(true);
         const response : ApiResponse<loginResponseData> = await confirmEmail(details.email || '',code,details.password || '');
         if (response?.IsSuccess && response.Data ) {
           const userDetails = await getUserData(localStorage.getItem(LocalStorageType.USER_ID) || '');
           setDetailstoLocal(response?.Data , userDetails  as UserDataType)
           toast.success(response?.Message, {position: "top-right"});
+          setIsLoading(false);
           router.push(navigations.onboarding);
         } else {
+          setIsLoading(false);
           if(response.StatusCode == ErrorCode.UNAUTHORISED){
             logout(router);
           }

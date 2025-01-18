@@ -70,6 +70,8 @@ export interface OnboardQuestionType {
     ControlPlaceholder?: string | null;
     QuestionOrder?: number ;
     ReferenceId?: string | null;
+    IsRequired:boolean;
+    isPartner:boolean;
     Options?: {
       id: number;  // Updated to string as per your JSON data
       QuestionId: number;
@@ -94,6 +96,7 @@ export interface QuestionTypes {
     ReferenceId?: string | null;
     IsRequired:boolean;
     regex?:string,
+    isPartner:boolean;
     Options?: {
       id: number;
       QuestionId: number;

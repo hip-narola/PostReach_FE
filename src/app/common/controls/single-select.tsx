@@ -1,7 +1,8 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Radio, RadioGroup } from '@nextui-org/react';
 import { OptionsList, QuestionTypes } from '@/app/shared/dataPass';
+import { DataContext } from '@/app/context/shareData';
 interface GlobalSingleSelectProps {
   optionList: QuestionTypes;
   initialData?: QuestionTypes[];
@@ -17,6 +18,11 @@ const SingleSelect: React.FC<GlobalSingleSelectProps> = ({
   selectedAnswerOptions,
   checkValidation
 }) => {
+  const context = useContext(DataContext);
+
+    if (!context) {
+        throw new Error('DataContext must be used within a DataProvider');
+    }
   const [selected, setSelected] = useState(optionList?.Answers?.question_option_id[0]);
 
   useEffect(() => {
@@ -35,7 +41,7 @@ const SingleSelect: React.FC<GlobalSingleSelectProps> = ({
   useEffect(() => {
     // Trigger validation initially
     
-    if (selected == undefined && optionList.IsRequired) {
+    if (selected == undefined && optionList.IsRequired && !context.getPartner) {
       checkValidation(true);
     }else{
       checkValidation(false);

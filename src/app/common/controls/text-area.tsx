@@ -1,6 +1,7 @@
 'use client';
+import { DataContext } from '@/app/context/shareData';
 import { QuestionTypes, SelectedAnswersType } from '@/app/shared/dataPass';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 interface GlobalTextAreaProps{
   optionList: QuestionTypes;
@@ -9,7 +10,11 @@ interface GlobalTextAreaProps{
 }
 
 const TextArea : React.FC<GlobalTextAreaProps> =  ({ optionList ,selectedAnswerOptions,checkValidation }) => {
+  const context = useContext(DataContext);
 
+  if (!context) {
+      throw new Error('DataContext must be used within a DataProvider');
+  }
   const [value, setValue] = useState(String(optionList?.Answers?.answer_text || ''));
   const [textboxTouched, setTextboxTouched] = useState(false);
   const [error, setError] = useState<string>("");
@@ -21,7 +26,7 @@ const TextArea : React.FC<GlobalTextAreaProps> =  ({ optionList ,selectedAnswerO
 
   useEffect(() => {
     // Trigger validation initially
-    if (value && optionList.IsRequired) {
+    if (value && optionList.IsRequired  && !context.getPartner) {
       checkValidation(true);
     }else{
       checkValidation(false);

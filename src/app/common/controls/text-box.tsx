@@ -1,5 +1,6 @@
+import { DataContext } from '@/app/context/shareData';
 import { QuestionTypes, SelectedAnswersType } from '@/app/shared/dataPass';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 interface GlobalTextBoxProps {
   optionList: QuestionTypes;
@@ -8,32 +9,56 @@ interface GlobalTextBoxProps {
 }
 
 const TextBox: React.FC<GlobalTextBoxProps> = ({ optionList, selectedAnswerOptions ,checkValidation}) => {
+  const context = useContext(DataContext);
+
+    if (!context) {
+        throw new Error('DataContext must be used within a DataProvider');
+    }
+
   const [value, setValue] = useState(String(optionList?.Answers?.answer_text || ''));
   const [textboxTouched, setTextboxTouched] = useState(false);
   const [error, setError] = useState<string>("");
+  const [isDisabled, setDisabled] = useState<boolean>(false);
+  const [answered, setAnswered] = useState<boolean>(false);
   
   useEffect(() => {
     setValue(String(optionList.Answers?.answer_text || ''));
     setTextboxTouched(false);
+    setError(""); 
   }, [optionList.Answers?.answer_text]);
 
   useEffect(() => {
-    validateInput();
-  }, [value]);
+    console.log('textbox =>',context.getPartner);
+    
+    if(context.getPartner && !answered){
+      setDisabled(true);
+      setTextboxTouched(false);
+      setError('');
+    }else{
+      setError("");
+      validateInput();
+      setTextboxTouched(false);
+      setDisabled(false);
+    }
+     
+  }, [value ,context.getPartner]);
 
   const validateInput = () => {
       const inputRegex = optionList.regex;
       const unescapedRegexString = inputRegex && inputRegex.replace(/\\\\/g, '\\'); // Replace double backslashes with single ones
       const regex = unescapedRegexString && new RegExp(unescapedRegexString);
-
-      if(!value && optionList.IsRequired) {
+      
+      if(!value && optionList.IsRequired && !context.getPartner) {
         setError("This field is required");
         checkValidation(true);
-      } else if (regex && !regex.test(value)) {
+      } else if (regex && !regex.test(value) && !context.getPartner) {
         setError("Please enter a valid value.");
         checkValidation(true);
-        console.log(' error=>',error);
       } else {
+        if(optionList.isPartner){
+          context.setPartner(true);
+          setAnswered(true);
+        }
         setError(""); 
         checkValidation(false);
       }
@@ -48,6 +73,13 @@ const TextBox: React.FC<GlobalTextBoxProps> = ({ optionList, selectedAnswerOptio
     };
     selectedAnswerOptions(obj);
   };
+
+  const handleBlur=()=>{
+    console.log('context.getPartner =>',context.getPartner);
+    if(!context.getPartner){
+      setTextboxTouched(true)
+    }
+  }
 
   return (
     <div className="mt-3 md:mt-4">
@@ -65,7 +97,8 @@ const TextBox: React.FC<GlobalTextBoxProps> = ({ optionList, selectedAnswerOptio
             autoComplete={optionList.ControlLabel}
             className="form-custom-input"
             onChange={handleSelection}
-            onBlur={() => setTextboxTouched(true)}
+            onBlur={handleBlur}
+            disabled={isDisabled}
           />
         </div>
            {textboxTouched && error && (
