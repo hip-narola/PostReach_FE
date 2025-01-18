@@ -12,7 +12,7 @@ import GlobalLoader from "./common/Loader/GlobalLoader";
 import { usePathname, useRouter } from "next/navigation";
 import ProtectedLayout from "@/ProtectedLayout";
 import navigations from "./constants/navigations";
-import Script from "next/script";
+// import Script from "next/script";
 import { useEffect } from "react";
 import { routeTitleMapping } from "./constants/match-route";
 
