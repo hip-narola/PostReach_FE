@@ -12,7 +12,7 @@ import GlobalLoader from "./common/Loader/GlobalLoader";
 import { usePathname, useRouter } from "next/navigation";
 import ProtectedLayout from "@/ProtectedLayout";
 import navigations from "./constants/navigations";
-// import Script from "next/script";
+import Script from "next/script";
 import { useEffect } from "react";
 import { routeTitleMapping } from "./constants/match-route";
 
@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <title>{pageTitle}</title>
       </head>
       <body className="font-Roboto antialiased bg-white">
-        {/* <Script
+        <Script
           id="clarity-script"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
@@ -65,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               })(window, document, "clarity", "script", "pftbt6yt4s");
             `,
           }}
-        /> */}
+        />
         <DataProvider>
           <NextUIProvider>
             <LoadingProvider>
