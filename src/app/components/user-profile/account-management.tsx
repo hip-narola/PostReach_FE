@@ -30,6 +30,9 @@ const AccountManagement: React.FC = () => {
     const [isActive , setIsActive] = useState(true);
     const [displayImage , setDisplayImage] = useState('');
     const [ isOpens,setOpen] = useState<boolean>(false);
+    const [phoneError, setPhoneError] = useState("");
+    const [isPhoneTouch, setPhoneTouch] = useState(false);
+    const [buttonDisabled, setIsButtonDisabled] = useState(false);
     const { setIsLoading } = useLoading();
    
 
@@ -83,7 +86,7 @@ const AccountManagement: React.FC = () => {
             toast.success(response?.Message, {position: "top-right"});
           } else {
              if(response.StatusCode == ErrorCode.UNAUTHORISED){
-                logout(router);
+                logoutFn();
              }
             setIsLoading(false);
             toast.error(response?.Message, {position: "top-right"});
@@ -114,7 +117,6 @@ const AccountManagement: React.FC = () => {
 
     const handleDataFromChild = (data: string) => {
         console.log('data =>',data);
-        
         setOpen(false)
     };
 
@@ -133,10 +135,38 @@ const AccountManagement: React.FC = () => {
           setIsLoading(false);
           toast.error(response?.Message, {position: "top-right"});
             if(response.StatusCode == ErrorCode.UNAUTHORISED){
-                logout(router);
+                logoutFn();
              }
         }
     }
+
+    const validateMobile = (number: string) => {
+        const numberRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
+        return numberRegex.test(number);
+    };
+
+    const validateForm = () => {
+        if (phoneNumber && !validateMobile(phoneNumber)) {
+            setPhoneError("Please enter a valid mobile number.");
+            setIsButtonDisabled(true);
+          } else {
+            setPhoneError("");
+            setIsButtonDisabled(false);
+          }
+    };
+
+    useEffect(() => {
+        validateForm();
+    }, [phoneNumber]);
+
+
+    const logoutFn = async() => {
+        localStorage.clear();
+        router.push(navigations.login)
+        await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+    }
+
+
 
 
   return (
@@ -225,22 +255,29 @@ const AccountManagement: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="sm:col-span-1">
-                                    <div className="flex flex-col w-full relative mb-5">
-                                        <label htmlFor="phone" className="text-black/60 px-1 bg-white font-normal  text-xs absolute -top-2 left-3">Phone</label>
-                                        <div>
-                                        <input
-                                            id="phone"
-                                            name="phone"
-                                            type="text"
-                                            value={phoneNumber}
-                                            onChange={(e) => setPhoneNumber(e.target.value)}
-                                            placeholder="Mobile Number"
-                                            autoComplete="phone"
-                                            className="form-custom-input"
-                                        />
-
+                                        <div className="flex flex-col w-full relative mb-5">
+                                            <label htmlFor="phone" className="text-black/60 px-1 bg-white font-normal  text-xs absolute -top-2 left-3">Phone</label>
+                                            <div>
+                                                <input
+                                                    id="phone"
+                                                    name="phone"
+                                                    type="text"
+                                                    value={phoneNumber}
+                                                    onChange={(e) => 
+                                                       { setPhoneTouch(true);
+                                                        setPhoneNumber(e.target.value)}}
+                                                    placeholder="Mobile Number"
+                                                    autoComplete="phone"
+                                                    className="form-custom-input"
+                                                    onBlur={() => setPhoneTouch(true)}
+                                                />
+                                                {isPhoneTouch && phoneError && (
+                                                    <span className="text-red-500 text-xs">
+                                                        {phoneError}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
                                     </div>
                                     <div className="sm:col-span-2">
                                         <div className="flex flex-col w-full relative">
@@ -275,7 +312,7 @@ const AccountManagement: React.FC = () => {
                     </div>
                     <div className="flex flex-row flex-wrap justify-end items-center gap-4 w-full relative  mt-6 md:mt-10">
                         <button className="theme-primary-outline-btn btn-sm w-auto px-5 my-0 capitalize font-medium">Manage Subscription</button>
-                        <button className="theme-primary-btn btn-sm w-auto px-5 my-0 capitalize font-medium">Save Changes</button>
+                        <button className="theme-primary-btn btn-sm w-auto px-5 my-0 capitalize font-medium" disabled={buttonDisabled}>Save Changes</button>
                     </div>
                 </div>
             </form>

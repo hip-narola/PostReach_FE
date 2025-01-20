@@ -14,8 +14,9 @@ import { DataContext } from "@/app/context/shareData";
 import { ErrorCode, LocalStorageType } from "@/app/constants/pages";
 import { getInteractions, readInteractions } from "@/app/services/user-service";
 import { ApiResponse } from "@/app/shared/response/apiResponse";
-import { logout } from "@/app/services/auth-service";
 import moment from "moment";
+import { logout } from "@/app/services/auth-service";
+import navigations from "@/app/constants/navigations";
 
 const Header: React.FC = () => {
 
@@ -36,8 +37,7 @@ const Header: React.FC = () => {
     const handleSelection  = async (e:DropDownType) => {
         
         if(e.value == 4){
-            localStorage.clear();
-            router.push(e.navigation)
+            logoutFn()
             router.refresh();
         }else{
             router.push(e.navigation)
@@ -79,7 +79,7 @@ const Header: React.FC = () => {
             getNotification();
         } else {
           if (response.StatusCode === ErrorCode.UNAUTHORISED) {
-            logout(router);
+            logoutFn();
           }
         }
     }
@@ -100,7 +100,7 @@ const Header: React.FC = () => {
             }
         } else {
           if (response.StatusCode === ErrorCode.UNAUTHORISED) {
-            logout(router);
+            logoutFn();
           }
         }
     }
@@ -120,6 +120,12 @@ const Header: React.FC = () => {
         // Clean up interval on component unmount
         return () => clearInterval(intervalId);
       }, [notificationType]);
+
+      const logoutFn = async() => {
+        localStorage.clear();
+        router.push(navigations.login)
+        await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+      }
 
   return (
    
@@ -141,7 +147,7 @@ const Header: React.FC = () => {
                     <img src="../../assets/icons/notification-icon.svg" alt="notification" />
                     {(badge && badge > 0 )&& <span className="absolute -top-1.5 -right-1 h-5 w-5 min-w-4 flex items-center justify-center text-xs text-white bg-[#F04E4E] rounded-full">{badge}</span>}
                     </a>
-                    {show && <div className="absolute mt-2.5 right-0 min-w-80 shadow-medium rounded-lg z-10">
+                    {show && <div className="absolute mt-2.5 right-0 min-w-52 md:min-w-80 shadow-medium rounded-lg z-10">
                         <div className="p-3 pt-4 bg-white rounded-lg">
                             <div className="flex items-center justify-between w-full">
                             <h4 className="page-title">

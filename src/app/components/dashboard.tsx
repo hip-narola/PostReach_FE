@@ -9,6 +9,7 @@ import { ErrorCode, LocalStorageType } from "../constants/pages";
 import { logout } from "../services/auth-service";
 import { useRouter } from "next/navigation";
 import { days, platformList } from "../constants/DahsboardData";
+import navigations from "../constants/navigations";
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
@@ -28,7 +29,7 @@ const Dashboard: React.FC = () => {
     if (response?.IsSuccess && response?.Data) {
       setInsightsData(response.Data);
     }  else if(response.StatusCode == ErrorCode.UNAUTHORISED){
-      logout(router);
+      logoutFn();
     }
     setIsLoading(false);
   };
@@ -41,6 +42,13 @@ const Dashboard: React.FC = () => {
     const roundToTwoDecimalPlaces = (value: number) => {
       return value.toFixed(2);
     };
+
+    const logoutFn = async() => {
+      localStorage.clear();
+      router.push(navigations.login)
+      await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+    }
+
 
   return (
 

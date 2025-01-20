@@ -5,7 +5,7 @@ import APIRoutes from '../../constants/API-Routes'
 import { CommonWords, ErrorCode, LocalStorageType, PageConstant, SocialMedia } from "../../constants/pages";
 import { useSearchParams } from 'next/navigation';
 import { ApiResponse } from "../../shared/response/apiResponse";
-import { disconnectSocial, getOrganizationList, getUserSocialLinks, selectPage, trialSubscription } from "../../services/user-service";
+import { disconnectSocial, getOrganizationList, getUserSocialLinks, selectPage } from "../../services/user-service";
 import { DataContext } from "../../context/shareData";
 import { logout } from "../../services/auth-service";
 import { useRouter } from "next/navigation";
@@ -15,6 +15,7 @@ import { useLoading } from "@/app/context/LoadingContext";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ConfirmationPopup from '../../common/custom-confirmation';
+import navigations from "@/app/constants/navigations";
 
 const LinkSocial: React.FC = () => {
   const context = useContext(DataContext);
@@ -27,6 +28,10 @@ const LinkSocial: React.FC = () => {
   const router = useRouter();
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [isSuccess , setSuccess] = useState<string | null>('false');
+  const [token , setToken] = useState<string>('');
+  const [refreshToken , setRefreshToken] = useState<string>('');
+  const [tokenExpire , setTokenExpire] = useState<string>('');
+  const [refreshExpire , setRefreshExpire] = useState<string>('');
   const [type , setType] = useState<number>(0);
   const [facebook , setFB] = useState(false);
   const [instagram , setInstagram] = useState(false);
@@ -47,6 +52,15 @@ const LinkSocial: React.FC = () => {
 
   useEffect(() => {
     const param = searchParams.get('isSuccess');
+    const access_token = searchParams.get('encrypted_access_token');
+    const refresh_token = searchParams.get('refresh_token');
+    const refresh_expire = searchParams.get('refresh_token_expire_in');
+    const token_expire = searchParams.get('expires_in');
+
+    if(access_token) setToken(access_token)
+    if(refresh_token) setRefreshToken(refresh_token)
+    if(refresh_expire) setRefreshExpire(refresh_expire)
+      if(token_expire) setTokenExpire(token_expire)
     setSuccess(param);
     checkConnected();
   }, [isSuccess]);
@@ -59,7 +73,7 @@ const LinkSocial: React.FC = () => {
     }
 
     if(type == SocialMedia.TWITTER){
-      window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}${APIRoutes.twitterSignIn}`;
+      window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}${APIRoutes.twitterSignIn}${parseInt(localStorage.getItem(LocalStorageType.USER_ID) || '')}`;
     }
 
 
@@ -159,22 +173,22 @@ const LinkSocial: React.FC = () => {
           setLinkedin(true)
         }
       });
-      if(response.Data.length == 1){
-        handleSubscription();
-      }
+      // if(response.Data.length == 1){
+        // handleSubscription();
+      // }
       setIsLoading(false);
     }else{
       setIsLoading(false);
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
     }
   }
 
   const getOrganization = async() => {
     setIsLoading(true);
-    const response : ApiResponse<OrganizationResponse[]> = await getOrganizationList(localStorage.getItem(LocalStorageType.USER_ID) || '',type);
-    console.log('response organization',response)
+    const response : ApiResponse<OrganizationResponse[]> = await getOrganizationList(localStorage.getItem(LocalStorageType.USER_ID) || '',type,token);
+    
     if(response.IsSuccess && response.Data){
       setIsLoading(false);
       if(response.Data.length > 1){
@@ -195,14 +209,32 @@ const LinkSocial: React.FC = () => {
 
   const handlePopupSubmit = async(selected:OrganizationResponse, type:number) => {
     setIsLoading(true);
-    const obj = {
-      userId :parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''),
-      pageId : selected.pageId, 
-      isPage: selected.isPage,
-      platform: type,
-      logoUrl:selected.logoUrl
+    let obj;
+    if(type == SocialMedia.LINKEDIN){
+       obj = {
+        userId :parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''),
+        pageId : selected.pageId, 
+        isPage: selected.isPage,
+        platform: type,
+        logoUrl:selected.logoUrl,
+        inkedInTokenParamDto: {
+          encrypted_access_token:token,
+          refresh_token:refreshToken,
+          refresh_token_expire_in:refreshExpire,
+          expires_in:tokenExpire
+        }
+      }
+    }else{
+       obj = {
+        userId :parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''),
+        pageId : selected.pageId, 
+        isPage: selected.isPage,
+        platform: type,
+        logoUrl:selected.logoUrl
+      }
+  
     }
-
+    
     const response : ApiResponse<[]> = await selectPage(obj);
     console.log('response organization',response)
     if(response.IsSuccess){
@@ -230,21 +262,24 @@ const LinkSocial: React.FC = () => {
    }
   }
 
-  const handleSubscription = async() => {
-    setIsLoading(true);
-    const response : ApiResponse<[]> = await trialSubscription(parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''));
-    if(response?.IsSuccess){
-   
-      setIsLoading(false);
-    }else{
-      setIsLoading(false);
-      
-      if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
-      }
-    }
-  }
+  // const handleSubscription = async() => {
+  //   setIsLoading(true);
+  //   const response : ApiResponse<[]> = await trialSubscription(parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''));
+  //   if(response?.IsSuccess){
+  //     setIsLoading(false);
+  //   }else{
+  //     setIsLoading(false);
+  //     if(response.StatusCode == ErrorCode.UNAUTHORISED){
+  //       logoutFn();
+  //     }
+  //   }
+  // }
 
+  const logoutFn = async() => {
+    localStorage.clear();
+    router.push(navigations.login)
+    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  }
 
   return (  
     <div>

@@ -3,9 +3,6 @@ import APIRoutes from "../constants/API-Routes"
 import {  OnboardQuestionType, UserDataType } from "../shared/dataPass";
 import { ApiResponse, ConfirmdCodeData, loginResponseData, SignupResponseData, SocialMediaType, UserProfileData } from "@/app/shared/response/apiResponse";
 import { LocalStorageType } from "../constants/pages";
-import { useRouter } from "next/navigation";
-import navigations from "../constants/navigations";
-
 
 export const login = async (email: string,password: string,rememberMe: boolean): Promise<ApiResponse<loginResponseData>> => {
   return await apiPost<loginResponseData>(APIRoutes.login, { email,password,rememberMe});
@@ -52,9 +49,13 @@ export const getQuestionList = async (type:string,userId:string) : Promise<ApiRe
   return apiGet<OnboardQuestionType>(APIRoutes.onboardUser , `${type}/${userId}`);
 };
 
-export const logout = (router: ReturnType<typeof useRouter>) => {
-  localStorage.clear()
-  router.push(navigations.login);
+// export const logout = async(router: ReturnType<typeof useRouter>) => {
+ 
+//   return apiPost<loginResponseData>(APIRoutes.logout, {accessToken});
+// };
+
+export const logout = async(accessToken: string)  : Promise<ApiResponse<[]>> => {
+  return apiPost<[]>(APIRoutes.logout, {accessToken});
 };
 
 

@@ -10,7 +10,7 @@ import StaticImage from "../../../../authImage";
 import { DataContextResponseType } from "@/app/shared/dataPass";
 import { ApiResponse } from "@/app/shared/response/apiResponse";
 import navigations from "@/app/constants/navigations";
-import { ErrorCode, PageConstant, Titles } from "@/app/constants/pages";
+import { ErrorCode, LocalStorageType, PageConstant, Titles } from "@/app/constants/pages";
 
 const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState("");
@@ -43,7 +43,7 @@ const ResetPassword: React.FC = () => {
       router.push(navigations.confirmCode);
       toast.error(response?.Message, {position: "top-right"});
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
     }
   };
@@ -68,7 +68,6 @@ const ResetPassword: React.FC = () => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     return passwordRegex.test(password);
   };
-
 
   const validateInputs = () => {
     let isValid = true;
@@ -111,6 +110,13 @@ const ResetPassword: React.FC = () => {
       }
     }
   }
+
+  const logoutFn = async() => {
+    localStorage.clear();
+    router.push(navigations.login)
+    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  }
+
 
   return (
     <div className="mx-auto max-w-[1440px] py-6 px-6 xl:px-[100px] min-h-screen flex items-start md:items-center">

@@ -72,7 +72,7 @@ const GlobalPopup: React.FC<GlobalPopupProps> = ({ showModal, title, data, onSen
           <div>
             <Modal isOpen={showModal}  placement={"center"}  scrollBehavior={scrollBehavior}  onClose={closeModal}>
               <ModalContent className="max-w-[767px] reset-password-modal py-2">
-                  <ModalHeader className="flex flex-col px-4 md:px-6 text-2xl">
+                  <ModalHeader className="flex flex-col px-4 md:px-6 text-2xl text-[#323232]">
                         {title}
                   </ModalHeader>
                   <ModalBody className="px-4 md:px-6">

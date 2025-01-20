@@ -88,7 +88,10 @@ body {
     @apply bg-[#B0B0B0];
   }
   .preview-btn{
-    @apply inline-flex m-auto px-5 md:px-7 py-2 bg-[#F3F3F3] rounded-3xl min-w-16 ;
+    @apply inline-flex justify-center m-auto px-5 md:px-7 py-2 bg-[#F3F3F3] rounded-3xl min-w-16 ;
+  }
+  .preview-btn img{
+    @apply min-w-5;
   }
   .verify-input-container{
     @apply h-10 md:h-[60px] gap-3 sm:gap-4 md:gap-6 w-full;
@@ -151,7 +154,9 @@ body {
   .select-list-item span[aria-hidden="true"] {
     @apply hidden;
 }
-
+.select-list-item{
+  @apply text-[#323232];
+}
 .select-list-item[aria-selected="true"] {
     @apply bg-[#d4d4d8];
 }
@@ -499,6 +504,9 @@ label.option-checkbox .ml-2{
 /* multi post Slider CSS */
 
 /* Dashboard css */
+.analytics-select{
+  @apply text-[#323232]
+}
 .analytics-select button div {
   width: 100%;
 }

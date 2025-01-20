@@ -12,6 +12,7 @@ import { CommonWords, ErrorCode, LocalStorageType, PageConstant, Titles } from "
 import { logout } from "@/app/services/auth-service";
 import { useRouter } from "next/navigation";
 import RejectReasonPopup from "./reject-reason-popup";
+import navigations from "@/app/constants/navigations";
 
 const ApprovalQueue: React.FC = () => {
 const router = useRouter();
@@ -41,7 +42,7 @@ const hasFetched = useRef(false);
       setDataLoad(true);
     } else {
       if (response.StatusCode === ErrorCode.UNAUTHORISED) {
-        logout(router);
+        logoutFn();
       }
       setIsLoading(false);
       setDataLoad(true);
@@ -103,7 +104,7 @@ const hasFetched = useRef(false);
       getPostListData({limit: 10,pageNumber:1,userId:parseInt(localStorage.getItem(LocalStorageType.USER_ID) || '')})
     }else{
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
       setApprovalData([]);
       getPostListData({limit: 10,pageNumber:1,userId:parseInt(localStorage.getItem(LocalStorageType.USER_ID) || '')})
@@ -119,6 +120,13 @@ const hasFetched = useRef(false);
     setSelectedData(data);
   }
   const handleDelete = () => {}
+
+  const logoutFn = async() => {
+    localStorage.clear();
+    router.push(navigations.login)
+    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  }
+
 
   return ( 
     <div>

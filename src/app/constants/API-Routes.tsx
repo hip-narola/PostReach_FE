@@ -10,6 +10,8 @@ type Routes = {
     confirmSignup: 'auth/signup/confirmation',
     forgotPassword: 'auth/forgotPassword',
     resetPassword: 'auth/resetPassword',
+    logout : 'auth/logout',
+  
   
     // user profile
     getUserData: 'user/',
@@ -19,7 +21,7 @@ type Routes = {
     // third-party Sign-in
     googleSignIn: 'auth/google',
     facebookSignIn: 'auth/facebook',
-    twitterSignIn: 'link-page/twitter-login',
+    twitterSignIn: 'link-page/twitter-login/',
     linkedinSignIn: 'link-page/linkedin-login',
     linkFacebookSignIn: 'link-page/facebook-link',
     facebookPageSignIn: 'link-page/facebook-page',

@@ -207,6 +207,12 @@ export interface PostOrganizationObject{
   isPage: boolean,
   platform: number,
   logoUrl:string
+  inkedInTokenParamDto?: {
+    encrypted_access_token:string;
+    refresh_token:string;
+    refresh_token_expire_in:string;
+    expires_in:string;
+  }
 }
 
 export interface DisconnectSocial{

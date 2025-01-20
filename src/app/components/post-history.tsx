@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import ConfirmationPopup from '../common/custom-confirmation';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import navigations from "../constants/navigations";
 
 const PostHisotry: React.FC = () => {
   const router = useRouter();
@@ -43,7 +44,7 @@ const hasFetched = useRef(false);
       setIsLoading(false);
       setDataLoad(true);
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
     }
   }
@@ -103,7 +104,7 @@ const hasFetched = useRef(false);
       getPostHistoryData({limit: 10,pageNumber:1,userId:parseInt(localStorage.getItem(LocalStorageType.USER_ID) || '')})
     }else{
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
       setIsLoading(false);
       toast.error(response?.Message, {position: "top-right"});
@@ -124,6 +125,13 @@ const hasFetched = useRef(false);
     setOpen(false);
     setConfirmOpen(false);
   }
+
+  const logoutFn = async() => {
+    localStorage.clear();
+    router.push(navigations.login)
+    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  }
+
 
 
   return ( 

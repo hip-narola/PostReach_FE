@@ -8,10 +8,11 @@ import { ApproveRejectType, PostListType } from "../../shared/dataPass";
 import { useLoading } from "../../context/LoadingContext";
 import { ApiResponse, ReasonListData } from "../../shared/response/apiResponse";
 import { getRejectReason } from "../../services/post-service";
-import {  ErrorCode, PageConstant } from "../../constants/pages";
+import {  ErrorCode, LocalStorageType, PageConstant } from "../../constants/pages";
 import ConfirmationPopup from '../../common/custom-confirmation';
 import { logout } from "../../services/auth-service";
 import { useRouter } from "next/navigation";
+import navigations from "@/app/constants/navigations";
 interface RejectReasonProps {
     showModal: boolean;
     title: string;
@@ -68,7 +69,7 @@ const RejectReasonPopup: React.FC<RejectReasonProps> = ({ showModal, title, onSe
           setReasonList(response.Data);
         }else{
             if(response.StatusCode == ErrorCode.UNAUTHORISED){
-                logout(router);
+                logoutFn();
              }
         }
           setIsLoading(false);
@@ -83,6 +84,13 @@ const RejectReasonPopup: React.FC<RejectReasonProps> = ({ showModal, title, onSe
         setOpen(false);
     }
 
+    const logoutFn = async() => {
+        localStorage.clear();
+        router.push(navigations.login)
+        await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+      }
+
+
     return (
         <div>
             {showModal &&
@@ -93,7 +101,7 @@ const RejectReasonPopup: React.FC<RejectReasonProps> = ({ showModal, title, onSe
                                     {(
                                         <>
                                            
-                                            {title && <ModalHeader className="flex flex-col px-6">
+                                            {title && <ModalHeader className="flex flex-col px-6 text-[#323232]">
                                                     {title}
                                             </ModalHeader>}
 
@@ -165,7 +173,7 @@ const RejectReasonPopup: React.FC<RejectReasonProps> = ({ showModal, title, onSe
                                                             label="Reason"
                                                             className="max-w-full">
                                                             {reasonType.map((item) => (
-                                                                <SelectItem key={item.id} onClick={() =>handleReasonSelect(item.id)}>
+                                                                <SelectItem className="text-[#323232]" key={item.id} onClick={() =>handleReasonSelect(item.id)}>
                                                                     {item.reason}
                                                                 </SelectItem>
                                                             ))}

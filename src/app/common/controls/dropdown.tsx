@@ -44,7 +44,7 @@ const DropdownControl : React.FC<GlobalDropdownControlProps> =  ({ optionList, s
               label= {optionList.ControlLabel}
               placeholder= {optionList.ControlPlaceholder}
               className="max-w-xs bg-[#EEFDFD] border-[#EEFDFD]">
-              {(val) => <SelectItem key={val.id}>{val.Name}</SelectItem>}
+              {(val) => <SelectItem className="text-[#323232]" key={val.id}>{val.Name}</SelectItem>}
             </Select>
     </div>
    

@@ -151,7 +151,7 @@ const InfiniteScroll: React.FC<GlobalTableProps> = ({ tableData ,onScrollData, t
           "",
         ],
         content: ["py-2 shadow-medium"],
-      }}  content={ <div style={{ color:"#454545",maxWidth: "340px", whiteSpace: "normal" }}><pre className="whitespace-break-spaces font-Roboto">{item.content}</pre></div>}>
+      }}  content={ <div style={{ color:"#454545",maxWidth: "340px", whiteSpace: "normal" }}><pre className="whitespace-break-spaces text-[#323232] font-Roboto">{item.content}</pre></div>}>
                                       {truncateContent(item.content, LengthConstant.WordLimit)}
                                     </Tooltip>
                                     </TableCell>
@@ -168,10 +168,10 @@ const InfiniteScroll: React.FC<GlobalTableProps> = ({ tableData ,onScrollData, t
                                       />
                                     </TableCell>
                                     <TableCell> 
-                                        <div className='flex items-center gap-2 text-[#5d5d5d] text-sm'>
+                                        <div className='flex items-center gap-2 text-[#5d5d5d] text-sm min-w-max'>
                                           <img  src='../assets/icons/calendar-plus.svg'/>{moment(item.scheduled_at).format('DD/MM/YYYY')}
                                         </div>
-                                        <div className='flex items-center gap-2 text-[#5d5d5d] text-sm mt-4'>
+                                        <div className='flex items-center gap-2 text-[#5d5d5d] text-sm mt-4  min-w-max'>
                                           <img  src='../assets/icons/time.svg'/>{moment(item.scheduled_at).format('HH:mm A')} 
                                         </div>
                                     </TableCell>
@@ -247,7 +247,7 @@ const InfiniteScroll: React.FC<GlobalTableProps> = ({ tableData ,onScrollData, t
           "",
         ],
         content: ["py-2 shadow-medium"],
-      }}  content={ <div style={{ color:"#454545",maxWidth: "340px", whiteSpace: "normal" }}><pre className="whitespace-break-spaces font-Roboto">{item.content}</pre></div>}>
+      }}  content={ <div style={{ color:"#454545",maxWidth: "340px", whiteSpace: "normal" }}><pre className="whitespace-break-spaces text-[#323232]  font-Roboto">{item.content}</pre></div>}>
                                         {truncateContent(item.content, LengthConstant.WordLimit)}
                                       </Tooltip>
                                       </TableCell>
@@ -264,10 +264,10 @@ const InfiniteScroll: React.FC<GlobalTableProps> = ({ tableData ,onScrollData, t
                                         />
                                       </TableCell>
                                       <TableCell> 
-                                          <div className='flex items-center gap-2 text-[#5d5d5d] text-sm'>
+                                          <div className='flex items-center gap-2 text-[#5d5d5d] text-sm  min-w-max'>
                                             <img  src='../assets/icons/calendar-plus.svg'/>{moment(item.scheduled_at).format('DD/MM/YYYY')}
                                           </div>
-                                          <div className='flex items-center gap-2 text-[#5d5d5d] text-sm mt-4'>
+                                          <div className='flex items-center gap-2 text-[#5d5d5d] text-sm mt-4  min-w-max'>
                                             <img  src='../assets/icons/time.svg'/>{moment(item.scheduled_at).format('HH:mm A')} 
                                           </div>
                                       </TableCell>

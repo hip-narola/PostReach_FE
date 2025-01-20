@@ -10,6 +10,7 @@ import { CalendarListType, CustomDateEventType, Post } from '../shared/dataPass'
 import { ErrorCode, LocalStorageType } from '../constants/pages';
 import { logout } from '../services/auth-service';
 import { useRouter } from 'next/navigation';
+import navigations from '../constants/navigations';
 
 const CustomCalendar = dynamic(() => import('../common/custom-calendar'), {
   ssr: false,
@@ -45,11 +46,18 @@ const CalendarPage: React.FC = () => {
       setEvent(response?.Data)
     }else{
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
       setIsLoading(false);
     }
   }
+
+  const logoutFn = async() => {
+    localStorage.clear();
+    router.push(navigations.login)
+    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  }
+
 
   const getWeekDates = (obj:CustomDateEventType) => {
     const startOfWeek = obj.startDate; // Get start of the week

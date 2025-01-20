@@ -161,7 +161,7 @@ const Login: React.FC = () => {
     }else{
       setIsLoading(false);
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
     }
   }
@@ -215,10 +215,18 @@ const Login: React.FC = () => {
     }else{
       setIsLoading(false);
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
     }
   }
+
+
+  const logoutFn = async() => {
+    localStorage.clear();
+    router.push(navigations.login)
+    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  }
+
 
 
   return (

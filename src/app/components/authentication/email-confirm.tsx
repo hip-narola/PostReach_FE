@@ -72,7 +72,7 @@ const { setIsLoading } = useLoading();
         } else {
           setIsLoading(false);
           if(response.StatusCode == ErrorCode.UNAUTHORISED){
-            logout(router);
+            logoutFn();
           }
           toast.error(response?.Message, {position: "top-right"});
         }
@@ -86,7 +86,7 @@ const { setIsLoading } = useLoading();
         return response?.Data as UserDataType
     }else{
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
     }
   }
@@ -99,7 +99,7 @@ const { setIsLoading } = useLoading();
         toast.success(response?.Message, {position: "top-right"});
       } else {
         if(response.StatusCode == ErrorCode.UNAUTHORISED){
-          logout(router);
+          logoutFn();
         }
         toast.error(response?.Message, {position: "top-right"});
       }
@@ -115,7 +115,7 @@ const { setIsLoading } = useLoading();
         toast.success(response?.Message, {position: "top-right"});
       } else {
         if(response.StatusCode == ErrorCode.UNAUTHORISED){
-          logout(router);
+          logoutFn();
         }
         toast.error(response?.Message, {position: "top-right"});
       }
@@ -135,6 +135,13 @@ const { setIsLoading } = useLoading();
   const handleComplete = () => {
     setExpired(false);
   };
+  
+  const logoutFn = async() => {
+    localStorage.clear();
+    router.push(navigations.login)
+    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  }
+
 
   return (
     <div className="mx-auto max-w-[1440px] py-6 px-6 xl:px-[100px] min-h-screen flex items-start md:items-center">

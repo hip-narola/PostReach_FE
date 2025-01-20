@@ -38,8 +38,8 @@ export const getQuestionnaireList = async (userId: string) : Promise<ApiResponse
 };
 
 
-export const getOrganizationList = async (userId: string,platform:number) : Promise<ApiResponse<OrganizationResponse[]>> => {
-  return apiGet<OrganizationResponse[]>(APIRoutes.organizationList , `${userId}/${platform}`);
+export const getOrganizationList = async (userId: string,platform:number,token:string) : Promise<ApiResponse<OrganizationResponse[]>> => {
+  return apiGet<OrganizationResponse[]>(APIRoutes.organizationList , `${userId}/${platform}?token=${token}`);
 };
 
 export const selectPage = async (data: PostOrganizationObject) : Promise<ApiResponse<[]>> => {

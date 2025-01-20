@@ -8,6 +8,7 @@ import { OnboardQuestionType } from '@/app/shared/dataPass';
 import { useLoading } from '@/app/context/LoadingContext';
 import { ErrorCode, LocalStorageType, QuestionnaireType } from '@/app/constants/pages';
 import { useRouter } from 'next/navigation';
+import navigations from '@/app/constants/navigations';
 
 
 
@@ -32,7 +33,7 @@ const OnBoarding: React.FC = () => {
         setIsLoading(false);
       }else{
         if(response.StatusCode == ErrorCode.UNAUTHORISED){
-          logout(router);
+          logoutFn();
         }
         setIsLoading(false);
       }
@@ -45,6 +46,13 @@ const OnBoarding: React.FC = () => {
       getQuestion();
     }
   },[]);
+
+  const logoutFn = async() => {
+    localStorage.clear();
+    router.push(navigations.login)
+    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  }
+
 
   return (
     <div className="mx-auto max-w-[1440px]  flex items-center">

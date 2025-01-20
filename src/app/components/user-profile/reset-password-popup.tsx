@@ -155,7 +155,7 @@ const ResetPasswordPopup: React.FC<ResetPasswordPopupProps> = ({ showModal, titl
     <div>
         <>
             <Modal isOpen={showModal}  placement={"center"}  onClose={closeModal}>
-            <ModalHeader className="flex flex-col px-6">
+            <ModalHeader className="flex flex-col px-6 text-[#323232]">
                   {title}
             </ModalHeader>
             <ModalContent className="max-w-[565px] reset-password-modal py-2">
@@ -163,7 +163,7 @@ const ResetPasswordPopup: React.FC<ResetPasswordPopupProps> = ({ showModal, titl
                 <>
                     <form action="" >
                         <ModalHeader className="flex flex-col px-8 md:px-6">
-                            <div className=" text-xl leading-8 font-medium capitalize md:text-left text-center">
+                            <div className=" text-xl leading-8 font-medium capitalize md:text-left text-center text-[#323232]">
                                 {title}
                             </div>
                         </ModalHeader>

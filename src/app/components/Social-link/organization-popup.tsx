@@ -57,7 +57,7 @@ const OrganizationPopup: React.FC<GlobalPopupProps> = ({ showModal, title, data,
     <div>
         <>
             <Modal isOpen={showModal} scrollBehavior={"inside"}   onClose={closeModal}>
-            <ModalHeader className="flex flex-col px-6">
+            <ModalHeader className="flex flex-col px-6 text-[#323232]">
                   {title}
             </ModalHeader>
             <ModalContent className="max-w-[565px] reset-password-modal py-1">
@@ -65,7 +65,7 @@ const OrganizationPopup: React.FC<GlobalPopupProps> = ({ showModal, title, data,
                 <>
                     
                         <ModalHeader className="flex flex-col px-3 md:px-6">
-                            <div className="text-lg md:text-xl leading-8 font-medium  md:text-left text-left">
+                            <div className="text-lg md:text-xl leading-8 font-medium  md:text-left text-left text-[#323232]">
                                 {title}
                             </div>
                         </ModalHeader>

@@ -90,14 +90,14 @@ const  ApprovalPopup : React.FC<ApprovalProps> = ({ showModal, title, onSendData
         {showModal && 
             <>
             <Modal isOpen={showModal} scrollBehavior={"inside"}  onClose={closeModal} >
-            <ModalHeader className="flex flex-col px-6">
+            <ModalHeader className="flex flex-col px-6 text-[#323232]">
                   {title}
             </ModalHeader>
             <ModalContent className="max-w-[565px] post-preview-modal self-center py-2">
             { (
                 <>
                 <ModalHeader className="flex flex-col md:px-20 px-8">
-                     <div className="md:px-6 px-0  text-xl leading-8 font-medium capitalize md:text-left text-center">
+                     <div className="md:px-6 px-0  text-xl leading-8 font-medium capitalize md:text-left text-center text-[#323232]">
                         {title}
                      </div>
                 </ModalHeader>
@@ -141,7 +141,7 @@ const  ApprovalPopup : React.FC<ApprovalProps> = ({ showModal, title, onSendData
                         >
                         {/* start slide-item */}
                         {popupData && popupData.map((item,index) => (
-                            <div className="md:px-20 px-2 overflow-y-auto max-h-[500px]" key={index}> 
+                            <div className="md:px-20 px-2 overflow-y-auto max-h-[calc(100vh-320px)]" key={index}> 
                             {item.channel ==  SocialMedia.FACEBOOK && 
                                 <div className="p-3 mx-2 md:mx-0 border border-[#E4E7EC] bg-white rounded-lg">
                                 <div className="flex items-center justify-between">
@@ -169,8 +169,8 @@ const  ApprovalPopup : React.FC<ApprovalProps> = ({ showModal, title, onSendData
                                 <div className="my-3"> 
                                     <p className="text-sm md:text-base">
                                         {expandedItems && expandedItems.includes(index)
-                                            ?  <pre className="whitespace-break-spaces font-Roboto">{item.content}</pre>
-                                            :  <pre className="whitespace-break-spaces font-Roboto">{truncateContent(item.content, LengthConstant.WordLimit)}</pre> 
+                                            ?  <pre className="whitespace-break-spaces text-[#323232] font-Roboto">{item.content}</pre>
+                                            :  <pre className="whitespace-break-spaces text-[#323232] font-Roboto">{truncateContent(item.content, LengthConstant.WordLimit)}</pre> 
                                           }
                                              {item.content && item.content.split(" ").length > LengthConstant.WordLimit && (
                                         <span className="text-sm font-medium cursor-pointer text-[#65676B] hover:text-themeblue"
@@ -271,8 +271,8 @@ const  ApprovalPopup : React.FC<ApprovalProps> = ({ showModal, title, onSendData
                                 <div>
                                     <p className="text-sm md:text-base">
                                         {expandedItems && expandedItems.includes(index)
-                                             ?  <pre className="whitespace-break-spaces">{item.content}</pre>
-                                             :  <pre className="whitespace-break-spaces">{truncateContent(item.content, LengthConstant.WordLimit)}</pre> }
+                                             ?  <pre className="whitespace-break-spaces text-[#323232] font-Roboto">{item.content}</pre>
+                                             :  <pre className="whitespace-break-spaces text-[#323232] font-Roboto">{truncateContent(item.content, LengthConstant.WordLimit)}</pre> }
                                              {item.content && item.content.split(" ").length > LengthConstant.WordLimit && (
                                         <span
                                             onClick={() => handleToggle(index)}
@@ -315,8 +315,8 @@ const  ApprovalPopup : React.FC<ApprovalProps> = ({ showModal, title, onSendData
                                 <p className="text-sm md:text-base">
                                    
                                         {expandedItems && expandedItems.includes(index)
-                                            ?  <pre className="whitespace-break-spaces">{item.content}</pre>
-                                            :  <pre className="whitespace-break-spaces">{truncateContent(item.content, LengthConstant.WordLimit)}</pre> }
+                                            ?  <pre className="whitespace-break-spaces text-[#323232] font-Roboto">{item.content}</pre>
+                                            :  <pre className="whitespace-break-spaces text-[#323232] font-Roboto">{truncateContent(item.content, LengthConstant.WordLimit)}</pre> }
                                              {item.content && item.content.split(" ").length > LengthConstant.WordLimit && (
                                         <span className="text-sm font-medium cursor-pointer text-[#65676B] hover:text-themeblue"
                                        
@@ -393,8 +393,8 @@ const  ApprovalPopup : React.FC<ApprovalProps> = ({ showModal, title, onSendData
                                 <div className="my-3 pl-10"> 
                                     <p className="text-sm md:text-base">
                                         {expandedItems && expandedItems.includes(index)
-                                            ?  <pre className="whitespace-break-spaces">{item.content}</pre>
-                                            :  <pre className="whitespace-break-spaces">{truncateContent(item.content, LengthConstant.WordLimit)}</pre> }
+                                            ?  <pre className="whitespace-break-spaces text-[#323232] font-Roboto">{item.content}</pre>
+                                            :  <pre className="whitespace-break-spaces text-[#323232] font-Roboto">{truncateContent(item.content, LengthConstant.WordLimit)}</pre> }
                                         </p>
                                         {item.content && item.content.split(" ").length > LengthConstant.WordLimit && (
                                         <span className="text-sm font-medium cursor-pointer text-[#65676B] hover:text-themeblue"

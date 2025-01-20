@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { ErrorCode, LocalStorageType, Titles } from "@/app/constants/pages";
 import { logout } from "@/app/services/auth-service";
 import { useRouter } from "next/navigation";
+import navigations from "@/app/constants/navigations";
 
 const BusinessPreference: React.FC = () => {
   const router = useRouter();
@@ -35,7 +36,7 @@ const BusinessPreference: React.FC = () => {
       setOpen(true);
     }else{
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
       setIsLoading(false);
     }
@@ -49,7 +50,7 @@ const BusinessPreference: React.FC = () => {
       setData(response?.Data as BusinessDataType)
     }else{
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
       setIsLoading(false);
     }
@@ -120,7 +121,7 @@ const BusinessPreference: React.FC = () => {
       getQuestionList();
     }else{
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
       setIsLoading(false);
     }
@@ -134,7 +135,7 @@ const BusinessPreference: React.FC = () => {
       setQuestionList(response?.Data as QuestionnaireListType)
     }else{
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logout(router);
+        logoutFn();
       }
       setIsLoading(false);
     }
@@ -147,6 +148,13 @@ const BusinessPreference: React.FC = () => {
       getQuestionList();
     }
   },[]);
+
+  const logoutFn = async() => {
+    localStorage.clear();
+    router.push(navigations.login)
+    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  }
+
 
   return (
     <div className="m-0 md:my-10 p-4 md:px-6">

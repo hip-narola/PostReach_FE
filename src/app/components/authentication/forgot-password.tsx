@@ -10,7 +10,7 @@ import StaticImage from "../../../../authImage";
 import { ApiResponse, ConfirmdCodeData } from "@/app/shared/response/apiResponse";
 import navigations from "@/app/constants/navigations";
 import { ErrorType } from "@/app/shared/dataPass";
-import { ErrorCode, PageConstant, Titles } from "@/app/constants/pages";
+import { ErrorCode, LocalStorageType, PageConstant, Titles } from "@/app/constants/pages";
 const ForgotPassword: React.FC = () => {
   const context = useContext(DataContext);
 
@@ -61,7 +61,7 @@ const ForgotPassword: React.FC = () => {
         router.push(navigations.confirmCode);
       } else {
         if(response.StatusCode == ErrorCode.UNAUTHORISED){
-          logout(router);
+          logoutFn();
         }
         toast.error(response?.Message, {position: "top-right"});
       }
@@ -70,7 +70,14 @@ const ForgotPassword: React.FC = () => {
 
   const handleClick = () => {
     router.push(navigations.login)
- }
+  }
+
+ const logoutFn = async() => {
+  localStorage.clear();
+  router.push(navigations.login)
+  await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  }
+
 
   return (
     <div className="mx-auto max-w-[1440px] py-6 px-6 xl:px-[100px] min-h-screen flex items-start md:items-center">
