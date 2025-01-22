@@ -11,6 +11,7 @@ import { ApiResponse, ConfirmdCodeData } from "@/app/shared/response/apiResponse
 import navigations from "@/app/constants/navigations";
 import { ErrorType } from "@/app/shared/dataPass";
 import { ErrorCode, LocalStorageType, PageConstant, Titles } from "@/app/constants/pages";
+import { useLoading } from "@/app/context/LoadingContext";
 const ForgotPassword: React.FC = () => {
   const context = useContext(DataContext);
 
@@ -23,7 +24,7 @@ const ForgotPassword: React.FC = () => {
   const [errors, setErrors] = useState<ErrorType>({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [touched, setTouched] = useState(false);
-
+  const { setIsLoading } = useLoading();
   const router = useRouter();
 
   const validateEmail = (email: string) => {
@@ -72,12 +73,20 @@ const ForgotPassword: React.FC = () => {
     router.push(navigations.login)
   }
 
- const logoutFn = async() => {
-  localStorage.clear();
-  router.push(navigations.login)
-  await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+  const logoutFn = async() => {
+    const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
+    
+    if(response?.IsSuccess){
+          setIsLoading(false);
+          localStorage.clear();
+          router.push(navigations.login)
+    }else{
+          setIsLoading(false);
+          if(response.StatusCode == ErrorCode.UNAUTHORISED){
+            logoutFn();
+          }
+    }
   }
-
 
   return (
     <div className="mx-auto max-w-[1440px] py-6 px-6 xl:px-[100px] min-h-screen flex items-start md:items-center">

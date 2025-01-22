@@ -197,7 +197,12 @@ export interface OrganizationResponse{
   pageName: string,
   industry: string,
   logoUrl: string,
-  isPage:boolean
+  isPage:boolean,
+  instagramId?:string,
+  facebookId?:string,
+  access_token?:string,
+  filePath?:string,
+  facebook_Profile_access_token:string
 }
 
 
@@ -207,11 +212,19 @@ export interface PostOrganizationObject{
   isPage: boolean,
   platform: number,
   logoUrl:string
-  inkedInTokenParamDto?: {
+  linkedInTokenParamDto?: {
     encrypted_access_token:string;
     refresh_token:string;
     refresh_token_expire_in:string;
     expires_in:string;
+  },
+  facebookConnectProfileParamDto?: {
+    access_token: string,
+    pageName: string,
+    faceBookId: string,
+    instagramId: string,
+    filePath?: string,
+    facebook_Profile_access_token: string
   }
 }
 

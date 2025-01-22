@@ -232,7 +232,7 @@ const InfiniteScroll: React.FC<GlobalTableProps> = ({ tableData ,onScrollData, t
                                           onChange={() => handleSelectionChange(item)}> 
                                         </Checkbox>
                                       </TableCell>
-                                      <TableCell>{item.postId}</TableCell>
+                                      {/* <TableCell>{item.postId}</TableCell> */}
                                       <TableCell>
                                         <div className="w-[76px] h-[76px] overflow-hidden">
                                           {item.image ? 
@@ -242,12 +242,9 @@ const InfiniteScroll: React.FC<GlobalTableProps> = ({ tableData ,onScrollData, t
                                         </div>
                                       </TableCell>
                                       <TableCell>
-                                      <Tooltip color="default" delay={100} placement={"top-start"}  classNames={{base: [
-          // arrow color
-          "",
-        ],
-        content: ["py-2 shadow-medium"],
-      }}  content={ <div style={{ color:"#454545",maxWidth: "340px", whiteSpace: "normal" }}><pre className="whitespace-break-spaces text-[#323232]  font-Roboto">{item.content}</pre></div>}>
+                                      <Tooltip color="default" delay={100} placement={"top-start"}  classNames={{base: ["",],
+                                          content: ["py-2 shadow-medium"],
+                                        }}  content={ <div style={{ color:"#454545",maxWidth: "340px", whiteSpace: "normal" }}><pre className="whitespace-break-spaces text-[#323232]  font-Roboto">{item.content}</pre></div>}>
                                         {truncateContent(item.content, LengthConstant.WordLimit)}
                                       </Tooltip>
                                       </TableCell>

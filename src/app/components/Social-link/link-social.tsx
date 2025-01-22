@@ -29,6 +29,7 @@ const LinkSocial: React.FC = () => {
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [isSuccess , setSuccess] = useState<string | null>('false');
   const [token , setToken] = useState<string>('');
+  const [facebookId , setFacebookId] = useState<string>('');
   const [refreshToken , setRefreshToken] = useState<string>('');
   const [tokenExpire , setTokenExpire] = useState<string>('');
   const [refreshExpire , setRefreshExpire] = useState<string>('');
@@ -53,16 +54,26 @@ const LinkSocial: React.FC = () => {
   useEffect(() => {
     const param = searchParams.get('isSuccess');
     const access_token = searchParams.get('encrypted_access_token');
+    const profile_token = searchParams.get('facebook_profile_access_token');
+    const facebookId = searchParams.get('facebookId');
     const refresh_token = searchParams.get('refresh_token');
     const refresh_expire = searchParams.get('refresh_token_expire_in');
     const token_expire = searchParams.get('expires_in');
-
-    if(access_token) setToken(access_token)
+   
+    if(access_token){
+      setToken(access_token)
+    } else if(profile_token){
+      setToken(profile_token)
+    }else{
+      setToken('')
+    }
+    if(facebookId) setFacebookId(facebookId)
     if(refresh_token) setRefreshToken(refresh_token)
     if(refresh_expire) setRefreshExpire(refresh_expire)
       if(token_expire) setTokenExpire(token_expire)
     setSuccess(param);
     checkConnected();
+
   }, [isSuccess]);
 
   const callSocialMedia = async(type: number) => {
@@ -187,7 +198,7 @@ const LinkSocial: React.FC = () => {
 
   const getOrganization = async() => {
     setIsLoading(true);
-    const response : ApiResponse<OrganizationResponse[]> = await getOrganizationList(localStorage.getItem(LocalStorageType.USER_ID) || '',type,token);
+    const response : ApiResponse<OrganizationResponse[]> = await getOrganizationList(localStorage.getItem(LocalStorageType.USER_ID) || '',type,(token ? token : ''),(facebookId ? facebookId : ''));
     
     if(response.IsSuccess && response.Data){
       setIsLoading(false);
@@ -217,7 +228,7 @@ const LinkSocial: React.FC = () => {
         isPage: selected.isPage,
         platform: type,
         logoUrl:selected.logoUrl,
-        inkedInTokenParamDto: {
+        linkedInTokenParamDto: {
           encrypted_access_token:token,
           refresh_token:refreshToken,
           refresh_token_expire_in:refreshExpire,
@@ -225,27 +236,56 @@ const LinkSocial: React.FC = () => {
         }
       }
     }else{
-       obj = {
-        userId :parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''),
-        pageId : selected.pageId, 
-        isPage: selected.isPage,
-        platform: type,
-        logoUrl:selected.logoUrl
+      if(type == SocialMedia.FACEBOOK || type == SocialMedia.INSTAGRAM){
+        if (!selected.access_token) {
+          throw new Error('Access token is required for Facebook/Instagram integration.');
+        }
+        obj = {
+          userId :parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''),
+          pageId : selected.pageId, 
+          isPage: selected.isPage,
+          platform: type,
+          logoUrl:selected.logoUrl,
+          facebookConnectProfileParamDto: {
+            access_token: selected.access_token,
+            pageName: selected.pageName || '',
+            faceBookId: facebookId,
+            instagramId: selected.instagramId || '',
+            filePath: selected.filePath || '',
+            facebook_Profile_access_token: token,
+          }
+        }
+      }else{
+        obj = {
+          userId :parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''),
+          pageId : selected.pageId, 
+          isPage: selected.isPage,
+          platform: type,
+          logoUrl:selected.logoUrl
+        }
+    
       }
-  
+      
     }
     
-    const response : ApiResponse<[]> = await selectPage(obj);
-    console.log('response organization',response)
-    if(response.IsSuccess){
-      toast.success(response?.Data, {position: "top-right"});
-      setOpen(false);
+    try {
+      const response: ApiResponse<[]> = await selectPage(obj);
+      console.log('response organization', response);
+  
+      if (response.IsSuccess) {
+        toast.success(response?.Data, { position: 'top-right' });
+        setOpen(false);
+        setIsLoading(false);
+        getConnection();
+      } else {
+        toast.error(response?.Data, { position: 'top-right' });
+        setIsLoading(false);
+        setOpen(false);
+      }
+    } catch (error) {
+      console.error('Error during submission:', error);
       setIsLoading(false);
-      getConnection();
-    }else{
-      toast.error(response?.Data, {position: "top-right"});
-      setIsLoading(false);
-      setOpen(false);
+      toast.error('Submission failed. Please try again.', { position: 'top-right' });
     }
   }
 
@@ -276,9 +316,17 @@ const LinkSocial: React.FC = () => {
   // }
 
   const logoutFn = async() => {
-    localStorage.clear();
-    router.push(navigations.login)
-    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+    const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
+    if(response?.IsSuccess){
+          setIsLoading(false);
+          localStorage.clear();
+          router.push(navigations.login)
+    }else{
+          setIsLoading(false);
+          if(response.StatusCode == ErrorCode.UNAUTHORISED){
+            logoutFn();
+          }
+    }
   }
 
   return (  

@@ -4,10 +4,6 @@ export const infinitePostListHeader = [
     label: "",
   },
   {
-    key: "postId",
-    label: "Post ID",
-  },
-  {
     key: "image",
     label: "Images",
   },

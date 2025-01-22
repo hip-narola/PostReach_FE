@@ -150,9 +150,17 @@ const BusinessPreference: React.FC = () => {
   },[]);
 
   const logoutFn = async() => {
-    localStorage.clear();
-    router.push(navigations.login)
-    await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+    const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
+    if(response?.IsSuccess){
+          setIsLoading(false);
+          localStorage.clear();
+          router.push(navigations.login)
+    }else{
+          setIsLoading(false);
+          if(response.StatusCode == ErrorCode.UNAUTHORISED){
+            logoutFn();
+          }
+    }
   }
 
 

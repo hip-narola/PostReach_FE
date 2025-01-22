@@ -17,6 +17,7 @@ import { ApiResponse } from "@/app/shared/response/apiResponse";
 import moment from "moment";
 import { logout } from "@/app/services/auth-service";
 import navigations from "@/app/constants/navigations";
+import { useLoading } from "@/app/context/LoadingContext";
 
 const Header: React.FC = () => {
 
@@ -34,6 +35,7 @@ const Header: React.FC = () => {
     const [unReadList , setUnreadListShow] = useState<NotificationListType>([]);
     const [allRead , setAllRead] = useState<boolean>(false);
     const [badge , setBadge] = useState<number>();
+    const { setIsLoading } = useLoading();
     const handleSelection  = async (e:DropDownType) => {
         
         if(e.value == 4){
@@ -122,9 +124,17 @@ const Header: React.FC = () => {
       }, [notificationType]);
 
       const logoutFn = async() => {
-        localStorage.clear();
-        router.push(navigations.login)
-        await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '')
+        const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
+        if(response?.IsSuccess){
+              setIsLoading(false);
+              localStorage.clear();
+              router.push(navigations.login)
+        }else{
+              setIsLoading(false);
+              if(response.StatusCode == ErrorCode.UNAUTHORISED){
+                logoutFn();
+              }
+        }
       }
 
   return (
@@ -143,11 +153,15 @@ const Header: React.FC = () => {
                 </li> */}
                 <li>
                    <div className="relative cursor-pointer">
-                   <a className="relative" onClick={handleNotification}>
+                 
+                  <div className="relative"  onClick={handleNotification}>
+                  {(badge && badge > 0 )&&  <span className="absolute -top-1.5 -right-1 z-10 h-5 w-5 min-w-4 flex items-center justify-center text-xs text-white bg-[#F04E4E] rounded-full">{badge}</span>}
+                  <a className="relative">
                     <img src="../../assets/icons/notification-icon.svg" alt="notification" />
-                    {(badge && badge > 0 )&& <span className="absolute -top-1.5 -right-1 h-5 w-5 min-w-4 flex items-center justify-center text-xs text-white bg-[#F04E4E] rounded-full">{badge}</span>}
+                   
                     </a>
-                    {show && <div className="absolute mt-2.5 right-0 min-w-52 md:min-w-80 shadow-medium rounded-lg z-10">
+                  </div>
+                    {show && <div className="absolute mt-2.5 right-0 min-w-52 sm:min-w-80 shadow-medium rounded-lg z-10">
                         <div className="p-3 pt-4 bg-white rounded-lg">
                             <div className="flex items-center justify-between w-full">
                             <h4 className="page-title">
