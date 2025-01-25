@@ -161,7 +161,6 @@ const LinkSocial: React.FC = () => {
   }
 
   const getConnection = async() => {
-    setIsLoading(true);
     const response : ApiResponse<LinkSocialResponseType> = await getUserSocialLinks(localStorage.getItem(LocalStorageType.USER_ID) || '');
     if(response?.IsSuccess && response.Data.length > 0){
      
@@ -187,9 +186,8 @@ const LinkSocial: React.FC = () => {
       // if(response.Data.length == 1){
         // handleSubscription();
       // }
-      setIsLoading(false);
+     
     }else{
-      setIsLoading(false);
       if(response.StatusCode == ErrorCode.UNAUTHORISED){
         logoutFn();
       }
@@ -201,13 +199,13 @@ const LinkSocial: React.FC = () => {
     const response : ApiResponse<OrganizationResponse[]> = await getOrganizationList(localStorage.getItem(LocalStorageType.USER_ID) || '',type,(token ? token : ''),(facebookId ? facebookId : ''));
     
     if(response.IsSuccess && response.Data){
-      setIsLoading(false);
       if(response.Data.length > 1){
         setOpen(true);
         setOrganizationData(response.Data)
       }else{
         handlePopupSubmit(response.Data[0],type)
       }
+      setIsLoading(false);
     
     }else{
       setIsLoading(false);

@@ -136,6 +136,8 @@ const Login: React.FC = () => {
       if(callback){
         if(response?.Data.userProfileStatus.onboardingCompleted && response?.Data.userProfileStatus.socialMediaAccounts.length > 0){
           localStorage.setItem('ActiveSidebar', JSON.stringify(0));
+          context.setSidebarAccess(true);
+          localStorage.setItem(LocalStorageType.SIDEBAR_ACCESS,JSON.stringify(true));
           router.push(navigations.dashboard);
         }else if(response.Data.userProfileStatus.onboardingCompleted && response?.Data.userProfileStatus.socialMediaAccounts.length == 0 ){
           context.setSidebarAccess(false);

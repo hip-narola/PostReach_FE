@@ -57,6 +57,7 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
         const userDetails = await getUserData(userId);
         if (userDetails) {
           localStorage.setItem(LocalStorageType.USER_DETAILS, JSON.stringify(userDetails));
+          localStorage.setItem(LocalStorageType.SIDEBAR_ACCESS,JSON.stringify(false))
           router.push(navigations.socialLinks);
         }
       }
@@ -154,9 +155,6 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
 
 
      const handleValidation = (validate:boolean) => {
-      console.log('context.getPartner =>',context.getPartner);
-      console.log('validate =>',validate);
-    
       if(!isPrevious){
         setIsButtonDisabled(validate);
       }else{

@@ -40,7 +40,7 @@ const CheckBox: React.FC<GlobalCheckBoxProps> = ({ optionList, selectedAnswerOpt
         }
        
         
-      }, [isSelected]);
+      }, [isSelected,context.getPartner ]);
 
     const handleSelection = (e: boolean) => {
         setIsSelected(e)

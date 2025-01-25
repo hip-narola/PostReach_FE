@@ -55,8 +55,6 @@ export const getQuestionList = async (type:string,userId:string) : Promise<ApiRe
 // };
 
 export const logout = async(accessToken: string)  : Promise<ApiResponse<[]>> => {
-  console.log('accessToken =>',accessToken);
-  
   return apiPost<[]>(APIRoutes.logout, {accessToken});
 };
 
