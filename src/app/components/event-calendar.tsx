@@ -37,8 +37,8 @@ const CalendarPage: React.FC = () => {
       setIsLoading(false);
       response?.Data.forEach((element:Post) => {
         element.allDay = true;
-        const inputDate = moment(element.start); // Convert the input date string to a moment object
-        const currentDate = moment(); // Get the current date and time as a moment object
+        const inputDate = moment(element.start).startOf('day'); // Convert to moment object and reset to start of the day
+        const currentDate = moment().startOf('day'); // Get the current date and reset to start of the day
         element.isPast = inputDate.isBefore(currentDate);
         element.start = new Date(element.start);
         element.end = new Date(element.end);
