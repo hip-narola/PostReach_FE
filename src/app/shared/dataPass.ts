@@ -250,6 +250,11 @@ export interface NotificationPost{
   isAllRead: boolean
 }
 
+export interface ManageSubscription{
+  url :string
+}
+
+
 
 
 

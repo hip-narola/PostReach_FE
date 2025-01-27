@@ -23,7 +23,7 @@ export const UserProfile : DropDownListType = [
   {
     name: 'Manage Subscription',
     icon:'',
-    navigation: '/user/dashboard',
+    navigation: '',
     value: 3
   },
   {

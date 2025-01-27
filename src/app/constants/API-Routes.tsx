@@ -61,7 +61,10 @@ type Routes = {
     readInteractions:'notification/update',
 
     // subscription 
-    trialSubscritption : 'payment/save-user-trial-subscription/'
+    trialSubscritption : 'payment/save-user-trial-subscription/',
+
+    // manage subscription
+    manageSubscription :'payment/get-coustomer-payment-link'
   };
   
   export default APIRoutes;

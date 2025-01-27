@@ -4,12 +4,12 @@ import { submitUserDetails } from "../../services/user-service";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ApiResponse } from "@/app/shared/response/apiResponse";
-import { UserData, UserDataType} from '../../shared/dataPass'
+import { ManageSubscription, UserData, UserDataType} from '../../shared/dataPass'
 import { DataContext } from "@/app/context/shareData";
 import { useLoading } from "@/app/context/LoadingContext";
 import { useRouter } from "next/navigation";
 import { ErrorCode, LocalStorageType, PageConstant, Titles } from "@/app/constants/pages";
-import { logout, resetPassword } from "@/app/services/auth-service";
+import { getLink, logout, resetPassword } from "@/app/services/auth-service";
 import ResetPasswordPopup from "./reset-password-popup";
 import navigations from "@/app/constants/navigations";
 const AccountManagement: React.FC = () => {
@@ -163,16 +163,28 @@ const AccountManagement: React.FC = () => {
     const logoutFn = async() => {
         const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
         if(response?.IsSuccess){
-              setIsLoading(false);
               localStorage.clear();
               router.push(navigations.login)
+        }else{
+              if(response.StatusCode == ErrorCode.UNAUTHORISED){
+                logoutFn();
+              }
+        }
+    }
+
+    const getLinkForManageSubscription = async() =>{
+        setIsLoading(true);
+        const response : ApiResponse<ManageSubscription>  = await getLink(parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''));
+        if(response?.IsSuccess){
+            window.open(response.Data.url, "_blank", "noopener,noreferrer");
+              setIsLoading(false);
         }else{
               setIsLoading(false);
               if(response.StatusCode == ErrorCode.UNAUTHORISED){
                 logoutFn();
               }
         }
-    }
+      }
 
 
 
@@ -319,7 +331,7 @@ const AccountManagement: React.FC = () => {
                         
                     </div>
                     <div className="flex flex-row flex-wrap justify-end items-center gap-4 w-full relative  mt-6 md:mt-10">
-                        <button className="theme-primary-outline-btn btn-sm w-auto px-5 my-0 capitalize font-medium">Manage Subscription</button>
+                        <button type="button" className="theme-primary-outline-btn btn-sm w-auto px-5 my-0 capitalize font-medium" onClick={getLinkForManageSubscription}>Manage Subscription</button>
                         <button className="theme-primary-btn btn-sm w-auto px-5 my-0 capitalize font-medium" disabled={buttonDisabled}>Save Changes</button>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 import { apiPost, apiGet } from "./commonApiService";
 import APIRoutes from "../constants/API-Routes"
-import {  OnboardQuestionType, UserDataType } from "../shared/dataPass";
+import {  ManageSubscription, OnboardQuestionType, UserDataType } from "../shared/dataPass";
 import { ApiResponse, ConfirmdCodeData, loginResponseData, SignupResponseData, SocialMediaType, UserProfileData } from "@/app/shared/response/apiResponse";
 import { LocalStorageType } from "../constants/pages";
 
@@ -56,6 +56,11 @@ export const getQuestionList = async (type:string,userId:string) : Promise<ApiRe
 
 export const logout = async(accessToken: string)  : Promise<ApiResponse<[]>> => {
   return apiPost<[]>(APIRoutes.logout, {accessToken});
+};
+
+
+export const getLink = async(userId: number)  : Promise<ApiResponse<ManageSubscription>> => {
+  return apiPost<ManageSubscription>(APIRoutes.manageSubscription, {userId});
 };
 
 

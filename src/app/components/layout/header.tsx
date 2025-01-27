@@ -9,13 +9,13 @@ import {
   } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { UserProfile } from "@/app/constants/user-profile-dropdown";
-import { DataContextResponseType, DropDownType, NotificationList, NotificationListType, UserData } from "@/app/shared/dataPass";
+import { DataContextResponseType, DropDownType, ManageSubscription, NotificationList, NotificationListType, UserData } from "@/app/shared/dataPass";
 import { DataContext } from "@/app/context/shareData";
 import { ErrorCode, LocalStorageType } from "@/app/constants/pages";
 import { getInteractions, readInteractions } from "@/app/services/user-service";
 import { ApiResponse } from "@/app/shared/response/apiResponse";
 import moment from "moment";
-import { logout } from "@/app/services/auth-service";
+import { getLink, logout } from "@/app/services/auth-service";
 import navigations from "@/app/constants/navigations";
 import { useLoading } from "@/app/context/LoadingContext";
 
@@ -42,7 +42,11 @@ const Header: React.FC = () => {
             logoutFn()
             router.refresh();
         }else{
-            router.push(e.navigation)
+            if(e.value == 3){
+                getLinkForManageSubscription();
+            }else{
+                router.push(e.navigation);
+            }
         }
        
         }
@@ -108,9 +112,6 @@ const Header: React.FC = () => {
     }
 
     useEffect(() => {
-        
-    
-    
         // Fetch data immediately
         getNotification();
     
@@ -129,6 +130,20 @@ const Header: React.FC = () => {
               setIsLoading(false);
               localStorage.clear();
               router.push(navigations.login)
+        }else{
+              setIsLoading(false);
+              if(response.StatusCode == ErrorCode.UNAUTHORISED){
+                logoutFn();
+              }
+        }
+      }
+
+      const getLinkForManageSubscription = async() =>{
+        setIsLoading(true);
+        const response : ApiResponse<ManageSubscription>  = await getLink(parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''));
+        if(response?.IsSuccess){
+            window.open(response.Data.url, "_blank", "noopener,noreferrer");
+              setIsLoading(false);
         }else{
               setIsLoading(false);
               if(response.StatusCode == ErrorCode.UNAUTHORISED){

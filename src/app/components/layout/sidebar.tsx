@@ -2,10 +2,14 @@
 import React, { useContext,useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {Menu ,LowerMenu} from '../../constants/sidebar';
-import { SidebarType } from "@/app/shared/dataPass";
+import { ManageSubscription, SidebarType } from "@/app/shared/dataPass";
 import { DataContext } from "@/app/context/shareData";
 import { Tooltip } from "@nextui-org/react";
-import { LocalStorageType } from "@/app/constants/pages";
+import { ErrorCode, LocalStorageType } from "@/app/constants/pages";
+import { ApiResponse } from "@/app/shared/response/apiResponse";
+import { getLink, logout } from "@/app/services/auth-service";
+import { useLoading } from "@/app/context/LoadingContext";
+import navigations from "@/app/constants/navigations";
 
 const SideBar: React.FC = () => {
   const context = useContext(DataContext);
@@ -20,6 +24,7 @@ const SideBar: React.FC = () => {
   const [isLowerActive , setLowerActive] = useState<number | null>(localStorage.getItem('LowerActiveSidebar') ? parseInt(localStorage.getItem('LowerActiveSidebar') || '') : null);
   const [MenuDetail , setMenu] = useState<SidebarType[]>([]);
   const [LowerMenuDetails , setLowerMenu] = useState<SidebarType[]>([]);
+  const { setIsLoading } = useLoading();
   const router = useRouter();
 
   const handleToggleSidebar = () => {
@@ -63,6 +68,33 @@ const SideBar: React.FC = () => {
   const handleToggleMobileSidebar = () => {
     context.setMobileSidenav(false)
   }
+
+  const getLinkForManageSubscription = async() =>{
+    setIsLoading(true);
+    const response : ApiResponse<ManageSubscription>  = await getLink(parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''));
+    if(response?.IsSuccess){
+        window.open(response.Data.url, "_blank", "noopener,noreferrer");
+          setIsLoading(false);
+    }else{
+          setIsLoading(false);
+          if(response.StatusCode == ErrorCode.UNAUTHORISED){
+            logoutFn();
+          }
+    }
+  }
+
+  const logoutFn = async() => {
+    const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
+    if(response?.IsSuccess){
+          localStorage.clear();
+          router.push(navigations.login)
+    }else{
+          if(response.StatusCode == ErrorCode.UNAUTHORISED){
+            logoutFn();
+          }
+    }
+}
+
   return (
     // className="sidebar-main  flex-1 max-w-60 bg-[#132E52] h-screen"
     <div className={`sidebar-main z-10 flex-1 max-w-60 h-screen bg-[#132E52] transition-all duration-300 ${isOpen ? "w-60" : "w-20"} ${sidenavShow && 'active'}` }>
@@ -128,7 +160,7 @@ const SideBar: React.FC = () => {
                     <p className="text-sm font-normal mb-4">
                     Improve your development process and start doing more with Horizon UI PRO!
                     </p>
-                    <button className="bg-white text-themeblue text-base rounded-lg  font-medium p-2 w-full">Upgrade to PRO</button>
+                    <button type="button" onClick={getLinkForManageSubscription} className="bg-white text-themeblue text-base rounded-lg  font-medium p-2 w-full">Upgrade to PRO</button>
                   </div>
                 }  
                 {/* update subscription promo */}
