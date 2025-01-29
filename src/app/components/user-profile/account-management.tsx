@@ -35,6 +35,9 @@ const AccountManagement: React.FC = () => {
     const [buttonDisabled, setIsButtonDisabled] = useState(false);
     const { setIsLoading } = useLoading();
    
+    useEffect(() => {
+        router.prefetch(navigations.login);
+      }, []);
 
     const getUserData = async() =>{
         const response = localStorage.getItem(LocalStorageType.USER_DETAILS) && JSON.parse(localStorage.getItem(LocalStorageType.USER_DETAILS) || '');

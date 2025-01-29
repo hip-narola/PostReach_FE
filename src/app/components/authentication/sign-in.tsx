@@ -1,14 +1,14 @@
 "use client";
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { login ,logout, userStatus } from "../../services/auth-service";
+import { login , userStatus } from "../../services/auth-service";
 import 'react-toastify/dist/ReactToastify.css';
 import StaticImage from "../../../../authImage";
 import { ApiResponse, loginResponseData, SocialMediaType, UserProfileData } from "@/app/shared/response/apiResponse";
 import navigations from "@/app/constants/navigations";
 import { useLoading } from '../../context/LoadingContext';
 import { UserDataType } from "@/app/shared/dataPass";
-import { ErrorCode, LocalStorageType, PageConstant } from "@/app/constants/pages";
+import {  LocalStorageType, PageConstant } from "@/app/constants/pages";
 import APIRoutes from "@/app/constants/API-Routes";
 import { getUserDetails } from "@/app/services/user-service";
 import { DataContext } from "@/app/context/shareData";
@@ -21,6 +21,16 @@ const Login: React.FC = () => {
   if (!context) {
       throw new Error('DataContext must be used within a DataProvider');
   }
+
+  useEffect(() => {
+    router.prefetch(navigations.confirmCode);
+    router.prefetch(navigations.login);
+    router.prefetch(navigations.dashboard);
+    router.prefetch(navigations.socialLinks);
+    router.prefetch(navigations.onboarding);
+    router.prefetch(navigations.forgotPassword);
+    router.prefetch(navigations.registration);
+  }, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -114,11 +124,12 @@ const Login: React.FC = () => {
   
       const userId = response.Data.userId;
       localStorage.setItem(LocalStorageType.ACCESS_TOKEN,response.Data.accessToken)
-      localStorage.setItem(LocalStorageType.USER_ID,response.Data.userId)
-      const userDetails = await getUserData(userId);
-      
-      localStorage.setItem(LocalStorageType.USER_DETAILS,JSON.stringify(userDetails));
-      UserStatusCheck(userId,false);
+      localStorage.setItem(LocalStorageType.USER_ID,response.Data.userId);
+      if(userId){
+        const userDetails = await getUserData(userId);
+        localStorage.setItem(LocalStorageType.USER_DETAILS,JSON.stringify(userDetails));
+        UserStatusCheck(userId,false);
+      }
     } else {
       setIsLoading(false);
       setEmail("");
@@ -162,9 +173,6 @@ const Login: React.FC = () => {
       router.refresh();
     }else{
       setIsLoading(false);
-      if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logoutFn();
-      }
     }
   }
 
@@ -216,27 +224,11 @@ const Login: React.FC = () => {
         return response?.Data as UserDataType
     }else{
       setIsLoading(false);
-      if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logoutFn();
-      }
     }
   }
 
 
-  const logoutFn = async() => {
-    const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
-    
-    if(response?.IsSuccess){
-          setIsLoading(false);
-          localStorage.clear();
-          router.push(navigations.login)
-    }else{
-          setIsLoading(false);
-          if(response.StatusCode == ErrorCode.UNAUTHORISED){
-            logoutFn();
-          }
-    }
-  }
+  
 
 
   return (

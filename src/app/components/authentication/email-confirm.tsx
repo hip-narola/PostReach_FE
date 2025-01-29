@@ -31,7 +31,13 @@ const EmailConfirm: React.FC = () => {
   const [touched, setTouched] = useState(false);
   const [isExpired, setExpired] = useState(true);
   const [expirationTime, setExpirationTime] = useState<number>(Date.now() + 60000); // Store expiration time
-const { setIsLoading } = useLoading();
+  const { setIsLoading } = useLoading();
+
+  useEffect(() => {
+    router.prefetch(navigations.login);
+    router.prefetch(navigations.resetPassword);
+    router.prefetch(navigations.onboarding);
+  }, []);
 
   const router = useRouter();
   const details : DataContextResponseType = context.sharedData;
@@ -140,11 +146,9 @@ const { setIsLoading } = useLoading();
     const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
     
     if(response?.IsSuccess){
-          setIsLoading(false);
           localStorage.clear();
           router.push(navigations.login)
     }else{
-          setIsLoading(false);
           if(response.StatusCode == ErrorCode.UNAUTHORISED){
             logoutFn();
           }

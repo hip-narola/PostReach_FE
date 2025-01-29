@@ -1,7 +1,7 @@
 "use client";
 import React, {  useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { logout, register, userStatus } from "../../services/auth-service";
+import { register, userStatus } from "../../services/auth-service";
 import { useContext } from 'react';
 import { DataContext } from '../../context/shareData';
 import { toast } from 'react-toastify';
@@ -11,7 +11,7 @@ import { ApiResponse, SignupResponseData, SocialMediaType, UserProfileData } fro
 import navigations from "@/app/constants/navigations";
 import { useLoading } from '../../context/LoadingContext';
 import {Checkbox} from "@nextui-org/checkbox";
-import { ErrorCode, LocalStorageType, PageConstant } from "@/app/constants/pages";
+import { LocalStorageType, PageConstant } from "@/app/constants/pages";
 import APIRoutes from "@/app/constants/API-Routes";
 import { getUserDetails } from "@/app/services/user-service";
 import { UserDataType } from "@/app/shared/dataPass";
@@ -23,6 +23,13 @@ const Registration: React.FC = () => {
   if (!context) {
     throw new Error('DataContext must be used within a DataProvider');
   }
+
+  useEffect(() => {
+    router.prefetch(navigations.confirmCode);
+    router.prefetch(navigations.login);
+    router.prefetch(navigations.dashboard);
+    router.prefetch(navigations.socialLinks);
+  }, []);
 
 
   const [username, setUsername] = useState("");
@@ -85,7 +92,7 @@ const Registration: React.FC = () => {
       setPasswordError("");
     }
     if(terms){
-      if(username != '' && password != '' && email != ''){
+      if(username != '' && password != '' && validatePassword(password) && email != '' && validateEmail(email)){
         isValid = true;
       }else{
         isValid = false;
@@ -180,9 +187,6 @@ const Registration: React.FC = () => {
            router.refresh();
          }else{
            setIsLoading(false);
-           if(response.StatusCode == ErrorCode.UNAUTHORISED){
-            logoutFn();
-           }
          }
        }
     
@@ -194,28 +198,8 @@ const Registration: React.FC = () => {
                return response?.Data as UserDataType
            }else{
              setIsLoading(false);
-             if(response.StatusCode == ErrorCode.UNAUTHORISED){
-              logoutFn();
-             }
            }
          }
-
-         const logoutFn = async() => {
-          const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
-          
-          if(response?.IsSuccess){
-                setIsLoading(false);
-                localStorage.clear();
-                router.push(navigations.login)
-          }else{
-                setIsLoading(false);
-                if(response.StatusCode == ErrorCode.UNAUTHORISED){
-                  logoutFn();
-                }
-          }
-        }
-       
-     
 
   return (
     <div className="mx-auto max-w-[1440px] py-6 px-6 xl:px-[100px] min-h-screen flex items-start md:items-center">

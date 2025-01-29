@@ -11,7 +11,6 @@ import { ApiResponse, ConfirmdCodeData } from "@/app/shared/response/apiResponse
 import navigations from "@/app/constants/navigations";
 import { ErrorType } from "@/app/shared/dataPass";
 import { ErrorCode, LocalStorageType, PageConstant, Titles } from "@/app/constants/pages";
-import { useLoading } from "@/app/context/LoadingContext";
 const ForgotPassword: React.FC = () => {
   const context = useContext(DataContext);
 
@@ -19,12 +18,16 @@ const ForgotPassword: React.FC = () => {
     throw new Error('DataContext must be used within a DataProvider');
   }
 
+  useEffect(() => {
+    router.prefetch(navigations.confirmCode);
+    router.prefetch(navigations.login);
+  }, []);
+
 
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState<ErrorType>({});
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [touched, setTouched] = useState(false);
-  const { setIsLoading } = useLoading();
   const router = useRouter();
 
   const validateEmail = (email: string) => {
@@ -77,11 +80,9 @@ const ForgotPassword: React.FC = () => {
     const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
     
     if(response?.IsSuccess){
-          setIsLoading(false);
           localStorage.clear();
           router.push(navigations.login)
     }else{
-          setIsLoading(false);
           if(response.StatusCode == ErrorCode.UNAUTHORISED){
             logoutFn();
           }

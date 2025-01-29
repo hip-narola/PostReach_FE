@@ -2,13 +2,10 @@
 import React, { useContext,useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {Menu ,LowerMenu} from '../../constants/sidebar';
-import { ManageSubscription, SidebarType } from "@/app/shared/dataPass";
+import { SidebarType } from "@/app/shared/dataPass";
 import { DataContext } from "@/app/context/shareData";
 import { Tooltip } from "@nextui-org/react";
-import { ErrorCode, LocalStorageType } from "@/app/constants/pages";
-import { ApiResponse } from "@/app/shared/response/apiResponse";
-import { getLink, logout } from "@/app/services/auth-service";
-import { useLoading } from "@/app/context/LoadingContext";
+import { LocalStorageType } from "@/app/constants/pages";
 import navigations from "@/app/constants/navigations";
 
 const SideBar: React.FC = () => {
@@ -24,8 +21,16 @@ const SideBar: React.FC = () => {
   const [isLowerActive , setLowerActive] = useState<number | null>(localStorage.getItem('LowerActiveSidebar') ? parseInt(localStorage.getItem('LowerActiveSidebar') || '') : null);
   const [MenuDetail , setMenu] = useState<SidebarType[]>([]);
   const [LowerMenuDetails , setLowerMenu] = useState<SidebarType[]>([]);
-  const { setIsLoading } = useLoading();
   const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch(navigations.postHistory);
+    router.prefetch(navigations.approvalQueue);
+    router.prefetch(navigations.dashboard);
+    router.prefetch(navigations.socialLinks);
+    router.prefetch(navigations.eventCalendar);
+    router.prefetch(navigations.userSupport);
+  }, []);
 
   const handleToggleSidebar = () => {
     setIsOpen(!isOpen); // Toggle the sidebar visibility
@@ -69,31 +74,21 @@ const SideBar: React.FC = () => {
     context.setMobileSidenav(false)
   }
 
-  const getLinkForManageSubscription = async() =>{
-    setIsLoading(true);
-    const response : ApiResponse<ManageSubscription>  = await getLink(parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''));
-    if(response?.IsSuccess){
-        window.open(response.Data.url, "_blank", "noopener,noreferrer");
-          setIsLoading(false);
-    }else{
-          setIsLoading(false);
-          if(response.StatusCode == ErrorCode.UNAUTHORISED){
-            logoutFn();
-          }
-    }
-  }
+  // const getLinkForManageSubscription = async() =>{
+  //   setIsLoading(true);
+  //   const response : ApiResponse<ManageSubscription>  = await getLink(parseInt(localStorage.getItem(LocalStorageType.USER_ID) || ''));
+  //   if(response?.IsSuccess){
+  //       window.open(response.Data.url, "_blank", "noopener,noreferrer");
+  //         setIsLoading(false);
+  //   }else{
+  //         setIsLoading(false);
+  //         if(response.StatusCode == ErrorCode.UNAUTHORISED){
+  //           logoutFn();
+  //         }
+  //   }
+  // }
 
-  const logoutFn = async() => {
-    const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
-    if(response?.IsSuccess){
-          localStorage.clear();
-          router.push(navigations.login)
-    }else{
-          if(response.StatusCode == ErrorCode.UNAUTHORISED){
-            logoutFn();
-          }
-    }
-}
+ 
 
   return (
     // className="sidebar-main  flex-1 max-w-60 bg-[#132E52] h-screen"
@@ -152,7 +147,7 @@ const SideBar: React.FC = () => {
         
               <div className="px-1 py-4">
                 {/* update subscription promo */}
-                {isOpen &&  
+                {/* {isOpen &&  
                   <div className="bg-themeblue rounded-xl py-4 px-3 text-center text-white font-Montserrat mb-3 max-[767px]:hidden">
                     <h4 className="text-xl xl:text-2xl leading-9 font-medium">
                     Upgrade to PRO
@@ -162,7 +157,7 @@ const SideBar: React.FC = () => {
                     </p>
                     <button type="button" onClick={getLinkForManageSubscription} className="bg-white text-themeblue text-base rounded-lg  font-medium p-2 w-full">Upgrade to PRO</button>
                   </div>
-                }  
+                }   */}
                 {/* update subscription promo */}
             <ul className="flex flex-col text-white gap-1">
                 {LowerMenuDetails.map((item, index) => (

@@ -11,7 +11,6 @@ import { DataContextResponseType } from "@/app/shared/dataPass";
 import { ApiResponse } from "@/app/shared/response/apiResponse";
 import navigations from "@/app/constants/navigations";
 import { ErrorCode, LocalStorageType, PageConstant, Titles } from "@/app/constants/pages";
-import { useLoading } from "@/app/context/LoadingContext";
 
 const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState("");
@@ -23,13 +22,18 @@ const ResetPassword: React.FC = () => {
   const [isCPasswordTouched, setIsCPasswordTouched] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [cPasswordError, setCPasswordError]= useState("");
-  const { setIsLoading } = useLoading();
   const router = useRouter();
   const context = useContext(DataContext);
   if (!context) {
     throw new Error('DataContext must be used within a DataProvider');
   }
+
   const details:DataContextResponseType = context.sharedData;
+
+  useEffect(() => {
+    router.prefetch(navigations.confirmCode);
+    router.prefetch(navigations.login);
+  }, []);
 
 
   const handleReset = async (e: React.FormEvent) => {
@@ -117,11 +121,9 @@ const ResetPassword: React.FC = () => {
     const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
     
     if(response?.IsSuccess){
-          setIsLoading(false);
           localStorage.clear();
           router.push(navigations.login)
     }else{
-          setIsLoading(false);
           if(response.StatusCode == ErrorCode.UNAUTHORISED){
             logoutFn();
           }

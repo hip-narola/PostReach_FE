@@ -51,11 +51,9 @@ const OnBoarding: React.FC = () => {
     const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
     
     if(response?.IsSuccess){
-          setIsLoading(false);
           localStorage.clear();
           router.push(navigations.login)
     }else{
-          setIsLoading(false);
           if(response.StatusCode == ErrorCode.UNAUTHORISED){
             logoutFn();
           }
