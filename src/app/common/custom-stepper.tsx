@@ -55,6 +55,8 @@ const CustomStepperWithLine: React.FC<CustomStepperWithLineProps> = ({  data }) 
         // Submit the onboarding flow if on the last step
         const userId = localStorage.getItem(LocalStorageType.USER_ID) || '';
         const userDetails = await getUserData(userId);
+        console.log('userDetails =>',userDetails);
+        
         if (userDetails) {
           localStorage.setItem(LocalStorageType.USER_DETAILS, JSON.stringify(userDetails));
           localStorage.setItem(LocalStorageType.SIDEBAR_ACCESS,JSON.stringify(false))

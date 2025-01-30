@@ -310,9 +310,10 @@ const AccountManagement: React.FC = () => {
                                                 id="password"
                                                 name="password"
                                                 type="password"
+                                                disabled
                                                 value={123456748}
-                                                className="form-custom-input"/>
-                                            <a  onClick={() =>setOpen(true)} className="text-themeblue font-normal  text-xs leading-5 block mt-2 text-end cursor-pointer">
+                                                className="form-custom-input opacity-65 bg-[#8686861a] cursor-no-drop"/>
+                                            <a onClick={() =>setOpen(true)} className="text-themeblue font-normal  text-xs leading-5 block mt-2 text-end cursor-pointer">
                                                 Change Password
                                             </a>
                                             </div>

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { confirmEmail , logout, setDetailstoLocal} from "../../services/auth-service";
+import { confirmEmail } from "../../services/auth-service";
 import VerificationInput from "react-verification-input";
 import { useContext } from 'react';
 import { DataContext } from '../../context/shareData';
@@ -14,7 +14,7 @@ import { DataContextResponseType, ErrorType, UserDataType } from "@/app/shared/d
 import navigations from "@/app/constants/navigations";
 import { getUserDetails } from "@/app/services/user-service";
 import Countdown from 'react-countdown';
-import { ErrorCode, LocalStorageType, PageConstant, Titles } from "@/app/constants/pages";
+import {  LocalStorageType, PageConstant, Titles } from "@/app/constants/pages";
 import { useLoading } from "@/app/context/LoadingContext";
 
 const EmailConfirm: React.FC = () => {
@@ -70,16 +70,18 @@ const EmailConfirm: React.FC = () => {
         setIsLoading(true);
         const response : ApiResponse<loginResponseData> = await confirmEmail(details.email || '',code,details.password || '');
         if (response?.IsSuccess && response.Data ) {
-          const userDetails = await getUserData(localStorage.getItem(LocalStorageType.USER_ID) || '');
-          setDetailstoLocal(response?.Data , userDetails  as UserDataType)
+          localStorage.setItem(LocalStorageType.ACCESS_TOKEN,response.Data.accessToken)
+          localStorage.setItem(LocalStorageType.USER_ID,response.Data.userId);
+          if(response.Data.userId){
+            const userDetails = await getUserData(response.Data.userId);
+            localStorage.setItem(LocalStorageType.USER_DETAILS,JSON.stringify(userDetails));
+          }
+         
           toast.success(response?.Message, {position: "top-right"});
           setIsLoading(false);
           router.push(navigations.onboarding);
         } else {
           setIsLoading(false);
-          if(response.StatusCode == ErrorCode.UNAUTHORISED){
-            logoutFn();
-          }
           toast.error(response?.Message, {position: "top-right"});
         }
       }
@@ -91,9 +93,7 @@ const EmailConfirm: React.FC = () => {
     if(response?.IsSuccess){
         return response?.Data as UserDataType
     }else{
-      if(response.StatusCode == ErrorCode.UNAUTHORISED){
-        logoutFn();
-      }
+    
     }
   }
 
@@ -104,9 +104,7 @@ const EmailConfirm: React.FC = () => {
         context.setSharedData({email : details.email, type : PageConstant.FORGOT_PASSWORD})
         toast.success(response?.Message, {position: "top-right"});
       } else {
-        if(response.StatusCode == ErrorCode.UNAUTHORISED){
-          logoutFn();
-        }
+       
         toast.error(response?.Message, {position: "top-right"});
       }
     }
@@ -120,9 +118,7 @@ const EmailConfirm: React.FC = () => {
         context.setSharedData({email : details.email, type : PageConstant.REGISTER})
         toast.success(response?.Message, {position: "top-right"});
       } else {
-        if(response.StatusCode == ErrorCode.UNAUTHORISED){
-          logoutFn();
-        }
+        
         toast.error(response?.Message, {position: "top-right"});
       }
     }
@@ -141,19 +137,6 @@ const EmailConfirm: React.FC = () => {
   const handleComplete = () => {
     setExpired(false);
   };
-  
-  const logoutFn = async() => {
-    const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
-    
-    if(response?.IsSuccess){
-          localStorage.clear();
-          router.push(navigations.login)
-    }else{
-          if(response.StatusCode == ErrorCode.UNAUTHORISED){
-            logoutFn();
-          }
-    }
-  }
 
 
   return (

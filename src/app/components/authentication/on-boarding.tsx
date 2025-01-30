@@ -2,18 +2,15 @@
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
 import CustomStepperWithLine from '../../common/custom-stepper';
-import { getQuestionList, logout } from '@/app/services/auth-service';
+import { getQuestionList } from '@/app/services/auth-service';
 import { ApiResponse } from '@/app/shared/response/apiResponse';
 import { OnboardQuestionType } from '@/app/shared/dataPass';
 import { useLoading } from '@/app/context/LoadingContext';
-import { ErrorCode, LocalStorageType, QuestionnaireType } from '@/app/constants/pages';
-import { useRouter } from 'next/navigation';
-import navigations from '@/app/constants/navigations';
+import { LocalStorageType, QuestionnaireType } from '@/app/constants/pages';
 
 
 
 const OnBoarding: React.FC = () => {
-  const router = useRouter();
   const [questionData, setQuestionData] = useState<OnboardQuestionType[] | undefined>(undefined);
   const { setIsLoading } = useLoading();
   const hasFetched = useRef(false);
@@ -32,9 +29,6 @@ const OnBoarding: React.FC = () => {
         }
         setIsLoading(false);
       }else{
-        if(response.StatusCode == ErrorCode.UNAUTHORISED){
-          logoutFn();
-        }
         setIsLoading(false);
       }
     }
@@ -46,20 +40,6 @@ const OnBoarding: React.FC = () => {
       getQuestion();
     }
   },[]);
-
-  const logoutFn = async() => {
-    const response : ApiResponse<[]>  = await logout(localStorage.getItem(LocalStorageType.ACCESS_TOKEN) || '');
-    
-    if(response?.IsSuccess){
-          localStorage.clear();
-          router.push(navigations.login)
-    }else{
-          if(response.StatusCode == ErrorCode.UNAUTHORISED){
-            logoutFn();
-          }
-    }
-  }
-
 
   return (
     <div className="mx-auto max-w-[1440px]  flex items-center">
