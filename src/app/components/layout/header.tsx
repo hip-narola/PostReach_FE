@@ -37,10 +37,7 @@ const Header: React.FC = () => {
     const [badge , setBadge] = useState<number>();
     const { setIsLoading } = useLoading();
 
-    useEffect(() => {
-        router.prefetch(navigations.userProfile);
-        router.prefetch(navigations.businessProfile);
-      }, []);
+  
 
     const handleSelection  = async (e:DropDownType) => {
         

@@ -33,11 +33,6 @@ const EmailConfirm: React.FC = () => {
   const [expirationTime, setExpirationTime] = useState<number>(Date.now() + 60000); // Store expiration time
   const { setIsLoading } = useLoading();
 
-  useEffect(() => {
-    router.prefetch(navigations.login);
-    router.prefetch(navigations.resetPassword);
-    router.prefetch(navigations.onboarding);
-  }, []);
 
   const router = useRouter();
   const details : DataContextResponseType = context.sharedData;
@@ -60,6 +55,7 @@ const EmailConfirm: React.FC = () => {
   };
 
   const handleCode = async (e: React.FormEvent) => {
+    console.log('details =>',details);
     
     e.preventDefault();
     if(details.type == PageConstant.FORGOT_PASSWORD){
@@ -115,7 +111,7 @@ const EmailConfirm: React.FC = () => {
     if (details.email) {
       const response :ApiResponse<ConfirmdCodeData> = await resendSignupCode(details.email);
       if (response?.IsSuccess) {
-        context.setSharedData({email : details.email, type : PageConstant.REGISTER})
+        context.setSharedData({email : details.email,password : details.password,type : PageConstant.REGISTER})
         toast.success(response?.Message, {position: "top-right"});
       } else {
         

@@ -35,10 +35,7 @@ const AccountManagement: React.FC = () => {
     const [buttonDisabled, setIsButtonDisabled] = useState(false);
     const { setIsLoading } = useLoading();
    
-    useEffect(() => {
-        router.prefetch(navigations.login);
-      }, []);
-
+  
     const getUserData = async() =>{
         const response = localStorage.getItem(LocalStorageType.USER_DETAILS) && JSON.parse(localStorage.getItem(LocalStorageType.USER_DETAILS) || '');
         
@@ -313,9 +310,11 @@ const AccountManagement: React.FC = () => {
                                                 disabled
                                                 value={123456748}
                                                 className="form-custom-input opacity-65 bg-[#8686861a] cursor-no-drop"/>
-                                            <a onClick={() =>setOpen(true)} className="text-themeblue font-normal  text-xs leading-5 block mt-2 text-end cursor-pointer">
-                                                Change Password
-                                            </a>
+                                                <p className="text-end">
+                                                <a onClick={() =>setOpen(true)} className="text-themeblue font-normal  text-xs leading-5 inline-block mt-2 text-end cursor-pointer">
+                                                    Change Password
+                                                </a>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>

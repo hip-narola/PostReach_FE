@@ -6,7 +6,6 @@ import { SidebarType } from "@/app/shared/dataPass";
 import { DataContext } from "@/app/context/shareData";
 import { Tooltip } from "@nextui-org/react";
 import { LocalStorageType } from "@/app/constants/pages";
-import navigations from "@/app/constants/navigations";
 
 const SideBar: React.FC = () => {
   const context = useContext(DataContext);
@@ -23,15 +22,7 @@ const SideBar: React.FC = () => {
   const [LowerMenuDetails , setLowerMenu] = useState<SidebarType[]>([]);
   const router = useRouter();
 
-  useEffect(() => {
-    router.prefetch(navigations.postHistory);
-    router.prefetch(navigations.approvalQueue);
-    router.prefetch(navigations.dashboard);
-    router.prefetch(navigations.socialLinks);
-    router.prefetch(navigations.eventCalendar);
-    router.prefetch(navigations.userSupport);
-  }, []);
-
+ 
   const handleToggleSidebar = () => {
     setIsOpen(!isOpen); // Toggle the sidebar visibility
     
@@ -130,7 +121,7 @@ const SideBar: React.FC = () => {
                               {isOpen && item.name}
                           </a>
                         :
-                          <Tooltip color="default" delay={100} offset={-13} content="Please link your social account for access!">
+                          <Tooltip className="text-textdark"  delay={100} offset={-13} content="Please link your social account for access!">
                             <a className={`py-3 px-4 flex items-center gap-4 rounded-md  ${!isOpen ? 'justify-center':''}`}>
                                   <img src={`../../assets/icons/sidebar-icons/${item.icon}`} alt={item.name} />
                                   {isOpen && item.name}
@@ -176,7 +167,7 @@ const SideBar: React.FC = () => {
                                   {isOpen && item.name}
                                 </a>
                                 :
-                                <Tooltip color="default" delay={100} placement="bottom-end" content="Please link your social account for access!">
+                                <Tooltip className="text-textdark"  delay={100} placement="bottom-end" content="Please link your social account for access!">
                                   <a className={`py-3 px-4 flex items-center gap-4 rounded-md`}>
                                     <img src={`../../assets/icons/sidebar-icons/${item.icon}`} alt={item.name} />
                                     {isOpen && item.name}

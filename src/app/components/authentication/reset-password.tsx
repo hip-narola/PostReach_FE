@@ -30,10 +30,7 @@ const ResetPassword: React.FC = () => {
 
   const details:DataContextResponseType = context.sharedData;
 
-  useEffect(() => {
-    router.prefetch(navigations.confirmCode);
-    router.prefetch(navigations.login);
-  }, []);
+ 
 
 
   const handleReset = async (e: React.FormEvent) => {

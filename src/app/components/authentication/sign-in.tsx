@@ -22,15 +22,6 @@ const Login: React.FC = () => {
       throw new Error('DataContext must be used within a DataProvider');
   }
 
-  useEffect(() => {
-    router.prefetch(navigations.confirmCode);
-    router.prefetch(navigations.login);
-    router.prefetch(navigations.dashboard);
-    router.prefetch(navigations.socialLinks);
-    router.prefetch(navigations.onboarding);
-    router.prefetch(navigations.forgotPassword);
-    router.prefetch(navigations.registration);
-  }, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

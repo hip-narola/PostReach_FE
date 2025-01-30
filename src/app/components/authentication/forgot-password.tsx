@@ -18,11 +18,6 @@ const ForgotPassword: React.FC = () => {
     throw new Error('DataContext must be used within a DataProvider');
   }
 
-  useEffect(() => {
-    router.prefetch(navigations.confirmCode);
-    router.prefetch(navigations.login);
-  }, []);
-
 
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState<ErrorType>({});
